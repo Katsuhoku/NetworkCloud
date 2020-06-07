@@ -1,6 +1,6 @@
 {
     "name": "A",
-    "path": "",
+    "path": ".",
     "localport": 0,
     "remote": [
         {
