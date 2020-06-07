@@ -39,6 +39,9 @@ public class CloudCore extends Thread {
     public CloudCore(Controller controller, JSONObject config) {
         this.controller = controller;
         this.config = config;
+
+        remoteSenderThreads = new ArrayList<>();
+        remoteSenderThreads = new ArrayList<>();
     }
 
     @Override
@@ -49,11 +52,21 @@ public class CloudCore extends Thread {
         remoteNodes = (JSONArray) config.get("remote");
         backupNode = (JSONObject) config.get("backup");
 
+        // Initializes the Master Queue
+        initMasterQueue();
+
         // Starts all other system sections
         initConnectionPoint();
         initRemoteConnections();
         initBackup();
         initBackupPoint();
+    }
+
+    private void initMasterQueue() {
+        FileHandler masterQueueFile = new FileHandler();
+        masterQueueFile.open(systemDirectory + "/sysfiles/queues/master.q", "w");
+        masterQueue = new Queue(systemDirectory + "/sysfiles/queues/master.q");
+        // ** Actually first has to ask if already exists **
     }
 
     // Initialize ConnectionPoint thread to start server and receive connections from other nodes
@@ -64,7 +77,15 @@ public class CloudCore extends Thread {
 
     // Initialize all RemoteSenders threads to connect to remote ConnectionPoints
     private void initRemoteConnections() {
+        remoteNodes = config.getJSONArray("remote");
 
+        for (int i = 0; i < remoteNodes.length(); i++) {
+            JSONObject remoteNode = remoteNodes.getJSONObject(i);
+            RemoteSender aux = new RemoteSender(this, remoteNode);
+            aux.start();
+
+            remoteSenderThreads.add(aux);
+        }
     }
 
     // Initalize BackupAdmin thread to manage this node's backup
@@ -81,5 +102,9 @@ public class CloudCore extends Thread {
     // previoulsy created
     public void addRemoteReceiver(RemoteReceiver thread) {
 
+    }
+
+    public String getSystemQueuesDirectory() {
+        return systemDirectory + "/sysfiles/queues";
     }
 }
