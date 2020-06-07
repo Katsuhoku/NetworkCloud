@@ -1,5 +1,8 @@
 package model;
 
+import org.json.*;
+import controller.Controller;
+
 /*
     Class: CloudCore
     Description: The core of the system. It manages the Master Operation Queue, 
@@ -9,11 +12,16 @@ package model;
 */
 
 public class CloudCore extends Thread {
-    public CloudCore() {
+    private Controller controller;
+    private JSONObject config;
+
+    public CloudCore(Controller controller, JSONObject config) {
+        this.controller = controller;
+        this.config = config;
     }
 
     @Override
     public void run()  {
-        
+        System.out.println(config);
     }
 }
