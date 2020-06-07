@@ -5,6 +5,10 @@ import java.net.Socket;
 import org.json.JSONObject;
 
 public class RemoteSender extends Thread {
+    // System core
+    private CloudCore core;
+
+    // Remote Node Info
     private String remoteNodeName;
     private String remoteAddress;
     private int remotePort;
@@ -16,6 +20,8 @@ public class RemoteSender extends Thread {
     private Queue subQueue;
 
     public RemoteSender(CloudCore core, JSONObject remoteNode) {
+        this.core = core;
+
         remoteNodeName = remoteNode.getString("name");
         remoteAddress = remoteNode.getString("address");
         remotePort = remoteNode.getInt("port");
@@ -23,7 +29,17 @@ public class RemoteSender extends Thread {
 
     @Override
     public void run() {
+        // Initialize this subordinated queue
+        initQueue();
+    }
 
+    // Configurates this RemoteSender's Subordinated Queue
+    private void initQueue() {
+        FileHandler queueFile = new FileHandler();
+        String queueFileName = remoteNodeName + ".q";
+        queueFile.open(core.getSystemQueuesDirectory() + "/" + queueFileName, "w");
+        subQueue = new Queue(core.getSystemQueuesDirectory() + "/" + queueFileName);
+        // ** Actually first has to ask if already exists **
     }
 
     // Receive an Operation and append it to this RemoteSender's Subordinated Queue
