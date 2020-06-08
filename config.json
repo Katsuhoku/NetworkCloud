@@ -1,7 +1,7 @@
 {
     "name": "A",
     "path": "D:/networkcloud_test",
-    "localport": 0,
+    "localport": 50000,
     "remote": [
         {
             "name": "B",
