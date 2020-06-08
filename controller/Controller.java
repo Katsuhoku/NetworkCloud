@@ -19,7 +19,7 @@ public class Controller {
         System.out.println("Hello World");
     }
 
-    public void initConfig() {
+    private void initConfig() {
         FileHandler configFile = new FileHandler();
 
         // Check if config file is in directory

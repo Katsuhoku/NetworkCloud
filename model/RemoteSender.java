@@ -1,8 +1,16 @@
 package model;
 
 import java.net.Socket;
-
 import org.json.JSONObject;
+
+/*
+    Class: RemoteSender
+    Description: Thread for send messages and data to remote nodes. It's created by
+    the system core at the start. If the remote node this thread is managing gets 
+    disconnected, then it will try to reconnect until it gets connected again.
+    It receives Operations from the core (in its Subordinated Queue), and manages
+    the corresponding message.
+*/
 
 public class RemoteSender extends Thread {
     // System core

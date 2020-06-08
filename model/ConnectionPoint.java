@@ -4,6 +4,13 @@ import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 
+/*
+    Class: ConnectionPoint
+    Description: The Server where remote nodes will connect to send (to this node)
+    messages and data. Is only listening for connections; when one arrives, creates
+    a RemoteReceiver thread, passing the created socket.
+*/
+
 public class ConnectionPoint extends Thread {
     private CloudCore core;
     private int localPort;
@@ -25,7 +32,7 @@ public class ConnectionPoint extends Thread {
                 socket.shutdownOutput();
 
                 // Send socket to RemoteReceiver
-                core.addRemoteReceiver(new RemoteReceiver(socket));
+                core.addRemoteReceiver(new RemoteReceiver(core, socket));
             }
         } catch (IOException e) {
             System.out.println("Error?");

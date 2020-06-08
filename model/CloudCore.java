@@ -1,5 +1,6 @@
 package model;
 
+import java.io.File;
 import java.util.ArrayList;
 
 import org.json.*;
@@ -104,7 +105,39 @@ public class CloudCore extends Thread {
 
     }
 
+    // Append operation in Master Queue
+    public void addOperation(Operation op) {
+
+    }
+
+    // Returns a copy the FileTable requested
+    public FileTable getFileTable(String path) {
+        return null; // ****
+    }
+
+    // Save the file in the path and with the name specified
+    public void saveFile(String name, File file, String path) {
+
+    }
+
+    // Make new directory in the specified path
+    public void createDirectory(String path) {
+
+    }
+
+    // Delete the file or directory in the specified path
+    public void delete(String path) {
+
+    }
+
+    // Return data of the specified file
+    public File getFile(String path) {
+        return null; // ****
+    }
+
+    // Return the directory path where system queues are saved
     public String getSystemQueuesDirectory() {
         return systemDirectory + "/sysfiles/queues";
     }
+
 }

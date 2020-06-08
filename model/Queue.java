@@ -2,6 +2,16 @@ package model;
 
 import java.util.concurrent.Semaphore;
 
+/*
+    Class: Queue
+    Description: Class that manages the resource of an "Operation Queue".
+    An Operation Queue is a system file where all the operations are appended and
+    also obtained from. As a resource accessed by more than one process, its necessary
+    guarantee that only one will be accessing it at time, so it uses a Semaphore to this
+    purpose.
+    It can represent both Master and Subordinated queues.
+*/
+
 public class Queue {
     private String path;
     private FileHandler file;
