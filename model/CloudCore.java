@@ -71,7 +71,7 @@ public class CloudCore extends Thread {
 
     // Initialize ConnectionPoint thread to start server and receive connections from other nodes
     private void initConnectionPoint() {
-        connectionPointThread = new ConnectionPoint(config.getInt("localport"));
+        connectionPointThread = new ConnectionPoint(this, config.getInt("localport"));
         connectionPointThread.start();
     }
 

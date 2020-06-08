@@ -1,12 +1,12 @@
 package model;
 
+import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 
 public class ConnectionPoint extends Thread {
     private CloudCore core;
     private int localPort;
-    
 
     public ConnectionPoint(CloudCore core, int localPort) {
         this.core = core;
@@ -16,12 +16,19 @@ public class ConnectionPoint extends Thread {
     //
     @Override
     public void run() {
-        ServerSocket serverSocket = new ServerSocket(localPort);
-        
-        while (true){
-            Socket socket = serverSocket.accept();
-            this.core.addRemoteReceiver(new RemoteReceiver());
+        ServerSocket serverSocket;
+        try {
+            serverSocket = new ServerSocket(localPort);
+
+            while (true){
+                Socket socket = serverSocket.accept();
+                // Send socket to RemoteReceiver
+                core.addRemoteReceiver(new RemoteReceiver());
+            }
+        } catch (IOException e) {
+            System.out.println("Error?");
         }
+        
         
     }
 }
