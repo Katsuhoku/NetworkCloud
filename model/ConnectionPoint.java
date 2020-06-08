@@ -13,7 +13,6 @@ public class ConnectionPoint extends Thread {
         this.localPort = localPort;
     }
 
-    //
     @Override
     public void run() {
         ServerSocket serverSocket;
@@ -21,9 +20,12 @@ public class ConnectionPoint extends Thread {
             serverSocket = new ServerSocket(localPort);
 
             while (true){
+                //This socket will be specifically used to receive data
                 Socket socket = serverSocket.accept();
+                socket.shutdownOutput();
+
                 // Send socket to RemoteReceiver
-                core.addRemoteReceiver(new RemoteReceiver());
+                core.addRemoteReceiver(new RemoteReceiver(socket));
             }
         } catch (IOException e) {
             System.out.println("Error?");
