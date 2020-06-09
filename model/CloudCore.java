@@ -1,23 +1,24 @@
 package model;
 
-import java.io.File;
-import java.util.ArrayList;
-
 import org.json.*;
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+
 import controller.Controller;
 
-/*
-    Class: CloudCore
-    Description: The core of the system. It manages the Master Operation Queue, 
-    delegate remote operations to the Subordinated Operation Queues and do all
-    local operations.
-    Also manages all files and File Tables.
-*/
+/**
+ * The core <code>Thread</code> of the system. CloudCore manages the {@link model.Queue 
+ * Master Operation Queue}, delegate remote operations to the {@link model.Queue 
+ * Subordinated Operation Queues} and do all local operations.
+ * Also manages all files an {@link model.FileTable FileTables}.
+ */
 
 public class CloudCore extends Thread {
     private Controller controller;
     private JSONObject config;
-    
+
     // Node information
     private String name;
     private String systemDirectory;
@@ -26,7 +27,7 @@ public class CloudCore extends Thread {
 
     // Threads
     private ConnectionPoint connectionPointThread;
-    private ArrayList<RemoteSender> remoteSenderThreads;
+    private HashMap<String, RemoteSender> remoteSenderThreads;
     private ArrayList<RemoteReceiver> remoteReceiverThreads;
     private BackupAdmin backupAdminThread;
     private BackupSlave backupSlaveThread;
@@ -41,12 +42,12 @@ public class CloudCore extends Thread {
         this.controller = controller;
         this.config = config;
 
-        remoteSenderThreads = new ArrayList<>();
-        remoteSenderThreads = new ArrayList<>();
+        remoteReceiverThreads = new ArrayList<>();
+        remoteSenderThreads = new HashMap<>();
     }
 
     @Override
-    public void run()  {
+    public void run() {
         // Establish all configuration parameters
         name = config.getString("name");
         systemDirectory = config.getString("path");
@@ -64,13 +65,11 @@ public class CloudCore extends Thread {
     }
 
     private void initMasterQueue() {
-        FileHandler masterQueueFile = new FileHandler();
-        masterQueueFile.open(systemDirectory + "/sysfiles/queues/master.q", "w");
         masterQueue = new Queue(systemDirectory + "/sysfiles/queues/master.q");
-        // ** Actually first has to ask if already exists **
     }
 
-    // Initialize ConnectionPoint thread to start server and receive connections from other nodes
+    // Initialize ConnectionPoint thread to start server and receive connections
+    // from other nodes
     private void initConnectionPoint() {
         connectionPointThread = new ConnectionPoint(this, config.getInt("localport"));
         connectionPointThread.start();
@@ -85,7 +84,7 @@ public class CloudCore extends Thread {
             RemoteSender aux = new RemoteSender(this, remoteNode);
             aux.start();
 
-            remoteSenderThreads.add(aux);
+            remoteSenderThreads.put(remoteNode.getString("name"), aux);
         }
     }
 
@@ -99,43 +98,84 @@ public class CloudCore extends Thread {
 
     }
 
-    // Add RemoteReceiver thread to the list. This method is called by the ConnectionPoint, wich must be
-    // previoulsy created
+    /**
+     * Add a new {@link model.RemoteReceiver} thread to the list. This method has
+     * to be called only by the {@link model.ConnectionPoint ConnectionPoint} thread,
+     * wich must be previously created.
+     * @param thread the new instance of {@link model.RemoteReceiver RemoteReceiver}.
+     */
     public void addRemoteReceiver(RemoteReceiver thread) {
-
+        thread.start();
+        remoteReceiverThreads.add(thread);
     }
 
-    // Append operation in Master Queue
+    /**
+     * Appends the specified {@link model.Operation Operation} in the {@link model.Queue 
+     * Master Queue}.
+     * @param op the {@link model.Operation Operation} instance to add.
+     */
     public void addOperation(Operation op) {
-
+        try {
+            masterQueue.add(op);
+        } catch (IOException e) {
+            System.out.println("Fatal Error: Cannot access to Master Queue");
+        } catch (InterruptedException ie) {
+            System.out.println("Error: Current thread has stopped while accessing Master Queue.");
+            System.out.println("More details:\n");
+            ie.printStackTrace();
+        }
     }
 
-    // Returns a copy the FileTable requested
+    /**
+     * Search and returns the requested {@link model.FileTable FileTable}.
+     * @param path the location of the {@link model.FileTable FileTable}.
+     * @return a copy of the FileTable if found, or <code>null</code> if not.
+     */
     public FileTable getFileTable(String path) {
         return null; // ****
     }
 
-    // Save the file in the path and with the name specified
-    public void saveFile(String name, File file, String path) {
+    /**
+     * Saves the passed <code>File</code> in the specified path. (?)
+     * <h2>(¿Cómo era que se guardaban archivos en Java? xD)</h2>
+     * @param path the path (filename included) where the file will be saved.
+     * @param file the file data. <b>(???)
+     */
+    public void saveFile(String path, File file) {
 
     }
 
-    // Make new directory in the specified path
+    /**
+     * Creates a new directory in the specified path.
+     * @param path the path (directory name included) where the directory will be
+     * created.
+     */
     public void createDirectory(String path) {
 
     }
 
-    // Delete the file or directory in the specified path
+    /**
+     * Removes from the local OS file system the specified file or directory.
+     * @param path the path (file or directory name included) where is located the
+     * file/directory to delete.
+     */
     public void delete(String path) {
 
     }
 
-    // Return data of the specified file
+    /**
+     * <h2>(¿Cómo era que se guardaban archivos en Java? x2)</h2>
+     * @param path
+     * @return
+     */
     public File getFile(String path) {
         return null; // ****
     }
 
-    // Return the directory path where system queues are saved
+    /**
+     * @return the path on the local OS file system where are located the {@link
+     * model.Queue Operation Queues}.
+     */
     public String getSystemQueuesDirectory() {
         return systemDirectory + "/sysfiles/queues";
     }

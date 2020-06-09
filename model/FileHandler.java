@@ -74,5 +74,6 @@ public class FileHandler {
   public void write(String line) throws IOException {
     writer.write(line);
     writer.newLine();
+    writer.flush();
   }
 }
