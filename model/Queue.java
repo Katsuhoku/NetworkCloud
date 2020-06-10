@@ -3,6 +3,8 @@ package model;
 import java.io.IOException;
 import java.util.concurrent.Semaphore;
 
+import model.Operation.Status;
+
 /**
  * Class that represents the resource of an "Operation Queue".
  * <p>
@@ -54,9 +56,16 @@ public class Queue {
         // Block access
         sem.acquire();
             // If the queue doesn't exist or is empty
-            if (!file.open(path, "r")) return null;
+            if (!file.open(path, "r")) {
+                sem.release();
+                return null;
+            };
+
             String aux = file.readline();
-            if (aux == null || aux.isEmpty()) return null;
+            if (aux == null || aux.isEmpty()) {
+                sem.release();
+                return null;
+            }
 
             // Otherwise, the queue exists and has Operations
             Operation next = new Operation(aux);
@@ -109,12 +118,44 @@ public class Queue {
      * Changes the state of the {@link model.Operation Operation} with the specified
      * id. The states are described in the {@link model.Operation Operation} class.
      * <i>(not implemented yet)</i>
-     * @param id the identifier <code>String</code> of the Operation.
-     * @param state the new state.
-     * @return <code>true</code> if the solicited Operation was found and updated, or
-     * <code>false</code> if not.
+     * 
+     * @param id    the identifier <code>String</code> of the Operation.
+     * @param status the new status.
+     * @return <code>true</code> if the solicited Operation was found and updated,
+     *         or <code>false</code> if not.
+     * @throws InterruptedException - if the thread accessing the resource gets
+     *                              interrumpted.
+     * @throws IOException
      */
-    public boolean changeState(String id, int state) {
-        return true; // ****
+    public boolean changeState(String id, Status status) throws InterruptedException, IOException {
+        // Block access
+        sem.acquire();
+            file.open(path, "r");
+            String content = file.read();
+            file.close();
+            if (content.isEmpty()) {
+                sem.release();
+                return false;
+            }
+
+            boolean found = false;
+            file.open(path, "w");
+            if (content.contains(id)) {
+                found = true;
+                String firstpart = content.split(id)[0]; // Before the desired Operation
+                String opcsv = id + content.split(id)[1].split("\n", 1)[0]; // The Operation CSV
+                String secondpart = "\n" + content.split(id)[1].split("\n", 1)[1]; // After the desired Operation
+
+                Operation aux = new Operation(opcsv);
+                aux.setStatus(status);
+
+                String newContent = firstpart + aux.toString() + secondpart; // Same content but with the desired Operation Status changed
+                file.write(newContent);
+            }
+            else file.write(content);
+            file.close();
+
+        sem.release();
+        return found;
     }
 }

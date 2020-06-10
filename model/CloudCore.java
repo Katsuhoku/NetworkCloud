@@ -84,6 +84,11 @@ public class CloudCore extends Thread {
     private Queue masterQueue;
 
     /**
+     * This node's {@link model.Operation Operations} History.
+     */
+    private Queue history;
+
+    /**
      * This node's root directory. It gets constructed using the <code>
      * systemDirectory</code> path.
      */
@@ -109,6 +114,8 @@ public class CloudCore extends Thread {
 
         // Initializes the Master Queue
         initMasterQueue();
+
+        initHistory();
 
         // Starts all other system sections
         // initConnectionPoint();
@@ -255,6 +262,13 @@ public class CloudCore extends Thread {
      */
     private void initMasterQueue() {
         masterQueue = new Queue(systemDirectory + "/sysfiles/queues/master.q");
+    }
+
+    /**
+     * Initializes the {@link model.Operation Operation} history.
+     */
+    private void initHistory() {
+        history = new Queue(systemDirectory + "/sysfiles/queues/history.q");
     }
 
     /**

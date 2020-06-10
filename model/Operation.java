@@ -44,7 +44,7 @@ public class Operation {
      */
     private String msg;
 
-    public static final String SEPARATOR = "-";
+    public static final String SEPARATOR = ":";
 
     /**
      * The current status of the operation.
@@ -112,6 +112,14 @@ public class Operation {
      */
     public Status getStatus() {
         return status;
+    }
+
+    /**
+     * Change this Operation instance's status
+     * @param status the new {@link model.Operation.Status Status}
+     */
+    public void setStatus(Status status) {
+        this.status = status;
     }
 
     /**
