@@ -56,7 +56,7 @@ public class Queue {
             // If the queue doesn't exist or is empty
             if (!file.open(path, "r")) return null;
             String aux = file.readline();
-            if (aux == null) return null;
+            if (aux == null || aux.isEmpty()) return null;
 
             // Otherwise, the queue exists and has Operations
             Operation next = new Operation(aux);

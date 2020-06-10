@@ -7,36 +7,87 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import controller.Controller;
+import model.Operation.Status;
+import model.Operation.Type;
 
 /**
- * The core <code>Thread</code> of the system. CloudCore manages the {@link model.Queue 
- * Master Operation Queue}, delegate remote operations to the {@link model.Queue 
- * Subordinated Operation Queues} and do all local operations.
- * Also manages all files an {@link model.FileTable FileTables}.
+ * The core <code>Thread</code> of the system. CloudCore manages the
+ * {@link model.Queue Master Operation Queue}, delegate remote operations to the
+ * {@link model.Queue Subordinated Operation Queues} and do all local
+ * operations. (FileTable class is no longer needed)
  */
 
 public class CloudCore extends Thread {
+    /**
+     * {@link controller.Controller Controller} of the application. Connects the
+     * user interface with this core.
+     */
     private Controller controller;
+
+    /**
+     * The configurable parameters, specified in the <code>config.json</code> file.
+     */
     private JSONObject config;
 
-    // Node information
+    /**
+     * This node name.
+     */
     private String name;
+
+    /**
+     * The path where the system will save all the files. System will not access
+     * further shallow than this directory. Only can go deeper as new directores are
+     * created.
+     */
     private String systemDirectory;
+
+    /**
+     * The remote nodes information.
+     */
     private JSONArray remoteNodes;
+
+    /**
+     * The Backup node information.
+     */
     private JSONObject backupNode;
 
-    // Threads
+    /**
+     * This node's {@link model.ConnectionPoint ConnectionPoint} thread.
+     */
     private ConnectionPoint connectionPointThread;
+
+    /**
+     * This node's {@link model.RemoteSender RemoteSender} threads. The key for
+     * accessing a specific one is the remote node's name, specified in
+     * <code>remoteNodes</code>.
+     */
     private HashMap<String, RemoteSender> remoteSenderThreads;
+
+    /**
+     * This node's {@link model.RemoteReceiver RemoteReceiver} threads.
+     */
     private ArrayList<RemoteReceiver> remoteReceiverThreads;
+
+    /**
+     * This node's {@link model.BackupAdmin BackupAdmin} thread.
+     */
     private BackupAdmin backupAdminThread;
+
+    /**
+     * This node's {@link model.BackupSlave BackupSlave} thread.
+     */
     private BackupSlave backupSlaveThread;
 
-    // Master Queue
+    /**
+     * This node's {@link model.Queue Master Queue}.
+     */
     private Queue masterQueue;
 
-    // File Tables Root
-    private FileTable root;
+    /**
+     * This node's root directory. It gets constructed using the <code>
+     * systemDirectory</code> path.
+     */
+    private File root;
 
     public CloudCore(Controller controller, JSONObject config) {
         this.controller = controller;
@@ -48,34 +99,107 @@ public class CloudCore extends Thread {
 
     @Override
     public void run() {
-        // Establish all configuration parameters
+        // Establishing all configuration parameters
         name = config.getString("name");
         systemDirectory = config.getString("path");
         remoteNodes = (JSONArray) config.get("remote");
         backupNode = (JSONObject) config.get("backup");
 
+        root = new File(systemDirectory + "/root");
+
         // Initializes the Master Queue
         initMasterQueue();
 
         // Starts all other system sections
-        initConnectionPoint();
-        initRemoteConnections();
-        initBackup();
-        initBackupPoint();
+        // initConnectionPoint();
+        // initRemoteConnections();
+        // initBackup();
+        // initBackupPoint();
+
+        // Starts the system
+        while (true) {
+            try {
+                Operation next = masterQueue.getNext();
+
+                if (next != null) {
+                    System.out.println(next);
+                    
+                    switch (next.getType()) {
+                        case TRANSFER:
+                            // Obtain the sender node involved
+                            // Pass the operation to the corresponding RemoteSender
+                            // Note: An operation transfer will never has the sender node as the local node.
+                            // Transfer operation means that this node's user is requesting to send a file
+                            // from a remote node, to a wether other remote node or this local node.
+                            // RemoteReceiver will receive the message for a transfer, and charge to the master
+                            // queue a Send operation, which means the file to send is in this local node.
+                            break;
+                        case SEND:
+                            // Pass the operation to the corresponding RemoteSender
+                            break;
+                        case DELETE:
+                            // Gets the node involved
+                            // If remote, pass this operation to the corresponding RemoteSender
+                            // Else, Gets the path and tries to delete the file or directory
+                            // Semaphore needed!
+                            break;
+                        case MKDIR:
+                            // Gets the node involved
+                            // If remote, pass this operation to the corresponding RemoteSender
+                            // Gets the path and tries to create the directory
+                            // Semaphore needed!
+                            break;
+                        case LISTDIR:
+                            // Gets the node involved.
+                            // If remote, then gets the status
+                            // If is already confirmed, then takes desired dir content from the msg variable.
+                            // Else (not confirmed), then it means the dir content wasn't solicited yet. Pass 
+                            // this operation to the corresponding RemoteSender, and will list content
+                            // when received. The core will not wait for that.
+                            // Else (not remote), gets the content of the local dir
+                            break;
+                        case CONFIRM:
+                            // Get the node involved
+                            // If remote, pass this operation to the corresponding RemoteSender
+                            // Else, search in the operation history (not defined yet) and confirms.
+                            break;
+                        case FAIL:
+                            // Get the node involved
+                            // If remote, pass this operation to the corresponding RemoteSender
+                            // Else, search in the operation history (not defined yet) and marks as failed.
+                            break;
+                    }
+                    sleep(3000);
+                }
+                else {
+                    sleep(2000);
+                }
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
+    /**
+     * Initializes the Master {@link model.Operation Queue}.
+     */
     private void initMasterQueue() {
         masterQueue = new Queue(systemDirectory + "/sysfiles/queues/master.q");
     }
 
-    // Initialize ConnectionPoint thread to start server and receive connections
-    // from other nodes
+    /**
+     * Initializes the {@link model.ConnectionPoint ConnectionPoint} thread.
+     */
     private void initConnectionPoint() {
         connectionPointThread = new ConnectionPoint(this, config.getInt("localport"));
         connectionPointThread.start();
     }
 
-    // Initialize all RemoteSenders threads to connect to remote ConnectionPoints
+    /**
+     * Initializes all {@link model.RemoteSender RemoteSender} threads.
+     */
     private void initRemoteConnections() {
         remoteNodes = config.getJSONArray("remote");
 
@@ -88,12 +212,16 @@ public class CloudCore extends Thread {
         }
     }
 
-    // Initalize BackupAdmin thread to manage this node's backup
+    /**
+     * Initializes the {@link model.BackupAdmin BackupAdmin} thread.
+     */
     private void initBackup() {
 
     }
 
-    // Intialize BackupSlave thread to receive files to backup from a remote node
+    /**
+     * Initializes the {@link model.BackupSlave BackupSlave} thread.
+     */
     private void initBackupPoint() {
 
     }
@@ -127,49 +255,25 @@ public class CloudCore extends Thread {
     }
 
     /**
-     * Search and returns the requested {@link model.FileTable FileTable}.
-     * @param path the location of the {@link model.FileTable FileTable}.
-     * @return a copy of the FileTable if found, or <code>null</code> if not.
-     */
-    public FileTable getFileTable(String path) {
-        return null; // ****
-    }
-
-    /**
-     * Saves the passed <code>File</code> in the specified path. (?)
-     * <h2>(¿Cómo era que se guardaban archivos en Java? xD)</h2>
-     * @param path the path (filename included) where the file will be saved.
-     * @param file the file data. <b>(???)
-     */
-    public void saveFile(String path, File file) {
-
-    }
-
-    /**
      * Creates a new directory in the specified path.
-     * @param path the path (directory name included) where the directory will be
-     * created.
+     * @param path the <code>systemDirectory root</code> relative path (directory name
+     * included) where the directory will be created.
+     * @return <code>true</code> if the directory was created. <code>false</code>
+     * otherwise.
      */
-    public void createDirectory(String path) {
-
+    public boolean createDirectory(String path) {
+        return new File(root.getAbsolutePath() + "/" + path).mkdir();
     }
 
     /**
      * Removes from the local OS file system the specified file or directory.
-     * @param path the path (file or directory name included) where is located the
-     * file/directory to delete.
+     * @param path the <code>systemDirectory root</code> relative path (file or directory 
+     * name included) where is located the file/directory to delete.
+     * @return <code>true</code> if and only if the file or directory is successfully 
+     * deleted; <code>false</code> otherwise.
      */
-    public void delete(String path) {
-
-    }
-
-    /**
-     * <h2>(¿Cómo era que se guardaban archivos en Java? x2)</h2>
-     * @param path
-     * @return
-     */
-    public File getFile(String path) {
-        return null; // ****
+    public boolean delete(String path) {
+        return new File(root.getAbsolutePath() + "/" +path).delete();
     }
 
     /**
@@ -178,6 +282,13 @@ public class CloudCore extends Thread {
      */
     public String getSystemQueuesDirectory() {
         return systemDirectory + "/sysfiles/queues";
+    }
+
+    /**
+     * @return the absolute path where incoming files will be saved.
+     */
+    public String getReceivedFilesDirectory() {
+        return root.getAbsolutePath() + "recv";
     }
 
 }

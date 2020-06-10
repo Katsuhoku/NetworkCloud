@@ -9,36 +9,18 @@ package model;
  * <p>
  * The type of an operation indicates what has to do. The types are:
  * <blockquote>
- * <b>Upload file: "upld"</b><p>
- * <b>Donwload file: "dwnld"</b><p>
- * <b>Transfer file: "transf"</b><p>
- * <b>Send file: "send"</b><p>
- * <b>Delete file or directory: "del"</b><p>
- * <b>Create directory: "mkdir"</b><p>
- * <b>List directory content: "ls"</b><p>
- * <b>Confirm operation: "conf"</b><p>
- * <b>Mark failed operation: "fail"</b><p>
+ * <b>Transfer file
+ * <b>Send file
+ * <b>Delete file or directory
+ * <b>Create directory
+ * <b>List directory content
+ * <b>Confirm operation
+ * <b>Mark failed operation
  * </blockquote>
  * For more information see documentation/System Operations
  */
 
 public class Operation {
-    /**
-     * Means that the status of the operation cannot be determinated. The corresponding
-     * reply hasn't arrived.
-     */
-    public static final int STATUS_UNKNOWN = 0;
-
-    /**
-     * Means that the operation has concluded successfully.
-     */
-    public static final int STATUS_CONFIRMED = 1;
-
-    /**
-     * Means that the operation has failed in the process.
-     */
-    public static final int STATUS_FAILED = 2;
-
     /**
      * The unique identifier for an instance of this class. The id is created with
      * the name of the node and, if "Remote operation", with the name of the remote
@@ -53,7 +35,7 @@ public class Operation {
     /**
      * The type of the operation.
      */
-    private String type;
+    private Type type;
 
     /**
      * Additional message, if needed by the type of the operation. For example the
@@ -65,7 +47,7 @@ public class Operation {
     /**
      * The current status of the operation.
      */
-    private int status;
+    private Status status;
 
     /**
      * Constructs an instance of Operation specifing all atributes separately
@@ -76,7 +58,7 @@ public class Operation {
      * @param msg the additional information.
      * @param status the current status.
      */
-    public Operation(String local, String remote, int counter, String type, String msg, int status) {
+    public Operation(String local, String remote, int counter, Type type, String msg, Status status) {
         this.id = local + "/" + remote + "/" + counter;
         this.type = type;
         this.msg = msg;
@@ -92,9 +74,9 @@ public class Operation {
     public Operation(String csv) {
         String[] parts = csv.split(",");
         id = parts[0];
-        type = parts[1];
+        type = Type.valueOf(parts[1]);
         msg = parts[2];
-        status = Integer.parseInt(parts[3]);
+        status = Status.valueOf(parts[3]);
     }
 
     @Override
@@ -112,7 +94,7 @@ public class Operation {
     /**
      * @return this Operation instance's <code>{@link #type}</code>.
      */
-    public String getType() {
+    public Type getType() {
         return type;
     }
 
@@ -126,7 +108,29 @@ public class Operation {
     /**
      * @return this Operation instance's <code>{@link #status}</code>.
      */
-    public int getStatus() {
+    public Status getStatus() {
         return status;
+    }
+
+    /**
+     * Operation Types.
+     */
+    public enum Type {
+        TRANSFER,
+        SEND,
+        DELETE,
+        MKDIR,
+        LISTDIR,
+        CONFIRM,
+        FAIL
+    }
+    
+    /**
+     * Operation Statuses.
+     */
+    public enum Status {
+        CONFIRMED,
+        FAILED,
+        UNKNOWN
     }
 }

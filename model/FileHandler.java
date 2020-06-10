@@ -73,7 +73,6 @@ public class FileHandler {
   //(line feed). Lanza una excepción IOException en caso de error.
   public void write(String line) throws IOException {
     writer.write(line);
-    writer.newLine();
     writer.flush();
   }
 }

@@ -14,12 +14,10 @@ public class Controller {
 
     public static void main(String[] args) throws IOException {
         Controller controller = new Controller();
-        controller.initConfig();
-
-        System.out.println("Hello World");
+        controller.initCore();
     }
 
-    private void initConfig() {
+    private void initCore() {
         FileHandler configFile = new FileHandler();
 
         // Check if config file is in directory
