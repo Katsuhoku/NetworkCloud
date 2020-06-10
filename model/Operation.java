@@ -44,6 +44,8 @@ public class Operation {
      */
     private String msg;
 
+    public static final String SEPARATOR = "-";
+
     /**
      * The current status of the operation.
      */
