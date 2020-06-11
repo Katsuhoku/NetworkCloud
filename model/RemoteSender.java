@@ -108,6 +108,7 @@ public class RemoteSender extends Thread {
                     if ((op = getNextOperation()) != null) {
                         //Sends the operation type name
                         dout.writeUTF(op.getType().name());
+                        dout.flush();
                         switch (op.getType()){
                             case CONFIRM:
                                 break;
@@ -138,6 +139,7 @@ public class RemoteSender extends Thread {
                             case MKDIR:
                             case TRANSFER: 
                                 dout.writeUTF(op.getMsg());
+                                dout.flush();
                                 break;
                         }
                     }
