@@ -8,13 +8,16 @@ import org.json.JSONObject;
 
 import model.CloudCore;
 import model.FileHandler;
+import views.MainWindow;
 
 public class Controller {
     private CloudCore core;
+    private MainWindow mainWindow;
 
     public static void main(String[] args) throws IOException {
         Controller controller = new Controller();
-        controller.initCore();
+        // controller.initCore();
+        controller.initWindow();
     }
 
     private void initCore() {
@@ -46,5 +49,14 @@ public class Controller {
             System.out.println("Fatal Error: Cannot open configuration file.");
             System.exit(-1);
         }
+    }
+
+    private void initWindow() {
+        mainWindow = new MainWindow(this);
+        mainWindow.start();
+    }
+
+    public void exit() {
+        System.exit(0);
     }
 }

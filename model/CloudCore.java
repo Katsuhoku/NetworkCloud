@@ -139,19 +139,6 @@ public class CloudCore extends Thread {
                     String node = next.getMsg().split(Operation.SEPARATOR)[0];
 
                     switch (next.getType()) {
-                        case TRANSFER:
-                            // Pass the operation to the corresponding RemoteSender
-                            remoteSenderThreads.get(node).addOperation(next);
-                            // Note: An operation transfer will never has the sender node as the local node.
-                            // Transfer operation means that this node's user is requesting to send a file
-                            // from a remote node, to a wether other remote node or this local node.
-                            // RemoteReceiver will receive the message for a transfer, and charge to the master
-                            // queue a Send operation, which means the file to send is in this local node.
-                            break;
-                        case SEND:
-                            // Pass the operation to the corresponding RemoteSender
-                            remoteSenderThreads.get(node).addOperation(next);
-                            break;
                         case DELETE:
                             // If local, Gets the path and tries to delete the file or directory
                             if (node.equals(name)) {
@@ -241,6 +228,16 @@ public class CloudCore extends Thread {
                             // Get the node involved
                             // If remote, pass this operation to the corresponding RemoteSender
                             // Else, search in the operation history (not defined yet) and marks as failed.
+                            break;
+                        case TRANSFER:
+                            // Note: An operation transfer will never has the sender node as the local node.
+                            // Transfer operation means that this node's user is requesting to send a file
+                            // from a remote node, to a wether other remote node or this local node.
+                            // RemoteReceiver will receive the message for a transfer, and charge to the master
+                            // queue a Send operation, which means the file to send is in this local node.
+                        case SEND:
+                            // Pass the operation to the corresponding RemoteSender
+                            remoteSenderThreads.get(node).addOperation(next);
                             break;
                     }
                     sleep(3000);
