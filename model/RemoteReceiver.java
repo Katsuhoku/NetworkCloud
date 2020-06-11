@@ -3,6 +3,7 @@ package model;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.DataInputStream;
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -44,6 +45,7 @@ public class RemoteReceiver extends Thread {
     @Override
     public void run() {
         DataInputStream din;
+        File f;
         BufferedOutputStream bf;
         byte[] b = new byte[4046];
         long file_size;
@@ -71,14 +73,18 @@ public class RemoteReceiver extends Thread {
                         core.addOperation(new Operation(core.getName(), "local", -1, Type.SEND, din.readUTF(), Status.UNKNOWN));
                         break;
                     case SEND: //Receives a file and save it into the received files directory
-                        bf = new BufferedOutputStream(new FileOutputStream(core.getReceivedFilesDirectory() + '/' + din.readUTF()));//Reads the file name
-                        file_size = din.readLong(); //Reads the file size
+                        f = new File(core.getReceivedFilesDirectory() + '/' + din.readUTF());//Reads the file name
+                        bf = new BufferedOutputStream(new FileOutputStream(f));
+                        //Reads file size
+                        file_size = din.readLong(); 
                         //saves file by chunks
                         while (file_size > 0 && (count = din.read(b, 0, (int) Math.min(file_size, b.length))) != -1){
                             bf.write(b, 0, count);
                             bf.flush();
                             file_size -= count;
                         }
+                        //Reads file last modified
+                        f.setLastModified(din.readLong());
                         bf.close();
                         break;
                 }
