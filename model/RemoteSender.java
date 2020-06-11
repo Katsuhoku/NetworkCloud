@@ -1,7 +1,17 @@
 package model;
 
 import java.net.Socket;
+import java.net.UnknownHostException;
+
 import org.json.JSONObject;
+
+import apple.laf.JRSUIConstants.Orientation;
+
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.DataOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 
 /**
@@ -38,7 +48,7 @@ public class RemoteSender extends Thread {
     /**
      * Socket for sending messages and data.
      */
-    private Socket receiver;
+    private Socket sender;
 
     /**
      * Subordinated {@link model.Queue Queue} this thread is managing. The
@@ -82,8 +92,68 @@ public class RemoteSender extends Thread {
         // Initialize this subordinated queue
         initQueue();
 
-        // Try Ciclo infinito: Checar la conexión
-        // Ciclo infinito: Checar la cola subordinada y envíar mensajes
+        byte[] b = new byte[4096];
+        int count;
+        File f;
+        BufferedInputStream bf;
+        Operation op;
+        DataOutputStream dout;
+
+        while (true) {
+            try {
+                sender = new Socket(remoteAddress, remotePort);
+                sender.shutdownInput();// This socket will be specifically used to send data
+                dout = new DataOutputStream(new BufferedOutputStream(sender.getOutputStream()));
+                while (true) {
+                    if ((op = getNextOperation()) != null) {
+                        //Sends the operation type name
+                        dout.writeUTF(op.getType().name());
+                        switch (op.getType()){
+                            case CONFIRM:
+                                break;
+                            case FAIL:
+                                break;
+                            case LISTDIR:
+                                break;
+
+                            case SEND:
+                                f = new File(op.getMsg().split(Operation.SEPARATOR)[1]);
+                                if (f.exists() && f.isFile()){
+                                    bf = new BufferedInputStream(new FileInputStream(f));
+                                    //Sends filename
+                                    dout.writeUTF(f.getName());
+                                    dout.flush();
+                                    //Sends file size
+                                    dout.writeLong(f.length());
+                                    dout.flush();
+                                    //Sends file data by chunks
+                                    while ((count = bf.read(b)) != -1) {
+                                        dout.write(b, 0, count);
+                                        dout.flush();
+                                    }
+                                    bf.close();
+                                }
+                                break;
+                            case DELETE:
+                            case MKDIR:
+                            case TRANSFER: 
+                                dout.writeUTF(op.getMsg());
+                                break;
+                        }
+                    }
+                }
+            } catch (UnknownHostException e) {
+                break; //El archivo de configuracion esta mal
+            } catch (IOException e) {
+                try{
+                    if (sender != null && sender.isConnected())
+                        sender.close();
+                    Thread.sleep(5000);
+                }catch (InterruptedException | IOException e1) {
+                    //Error?
+                }
+            }
+        }
     }
 
     /**
