@@ -8,6 +8,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.Socket;
+import java.util.ArrayList;
 
 import model.Operation.Type;
 
@@ -71,22 +72,45 @@ public class RemoteReceiver extends Thread {
                         core.addOperation(new Operation(Type.MKDIR, din.readUTF()));
                         break;
                     case TRANSFER:
-                        core.addOperation(new Operation(Type.SEND, din.readUTF()));
+                        String[] params = din.readUTF().split(Operation.SEPARATOR);
+                        core.addOperation(new Operation(Type.SEND, params[1] + Operation.SEPARATOR + params[2] + Operation.SEPARATOR + params[3]));
                         break;
-                    case SEND: //Receives a file and save it into the received files directory
-                        f = new File(core.getReceivedFilesDirectory() + '/' + din.readUTF());//Reads the file name
-                        bf = new BufferedOutputStream(new FileOutputStream(f));
-                        //Reads file size
-                        file_size = din.readLong(); 
-                        //saves file by chunks
-                        while (file_size > 0 && (count = din.read(b, 0, (int) Math.min(file_size, b.length))) != -1){
-                            bf.write(b, 0, count);
-                            bf.flush();
-                            file_size -= count;
+                    case SEND: 
+                        // This node's requested data
+                        String receiving = din.readUTF();
+
+                        // If is going to receive file data
+                        if (receiving.equals(Operation.SEND_DATA)) {
+                            //Receives a file and save it into the received files directory
+                            f = new File(core.getReceivedFilesDirectory() + '/' + din.readUTF());//Reads the file name
+                            bf = new BufferedOutputStream(new FileOutputStream(f));
+                            //Reads file size
+                            file_size = din.readLong(); 
+                            //saves file by chunks
+                            while (file_size > 0 && (count = din.read(b, 0, (int) Math.min(file_size, b.length))) != -1){
+                                bf.write(b, 0, count);
+                                bf.flush();
+                                file_size -= count;
+                            }
+                            //Reads file last modified
+                            f.setLastModified(din.readLong());
+                            bf.close();
                         }
-                        //Reads file last modified
-                        f.setLastModified(din.readLong());
-                        bf.close();
+                        // Else, the incoming data is a remote directory content
+                        else {
+                            // Files list size
+                            int size = din.readInt();
+
+                            ArrayList<String> remoteFilesInfo = new ArrayList<>();
+                            for (int i = 0; i < size; i++) {
+                                remoteFilesInfo.add(din.readUTF());
+                            }
+
+                            // Then, passes the list to the core
+                            core.listdir(remoteFilesInfo);
+                        }
+                        // Note: What if the requested dir/file wasn't available?
+                        // Need add confirmation of existence
                         break;
                 }
             }

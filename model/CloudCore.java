@@ -7,7 +7,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import controller.Controller;
-import model.Operation.Type;
 
 /**
  * The core <code>Thread</code> of the system. CloudCore manages the
@@ -105,8 +104,11 @@ public class CloudCore extends Thread {
         // Establishing all configuration parameters
         name = config.getString("name");
         systemDirectory = config.getString("path");
-        remoteNodes = (JSONArray) config.get("remote");
-        backupNode = (JSONObject) config.get("backup");
+        remoteNodes = config.getJSONArray("remote");
+        backupNode = config.getJSONObject("backup");
+
+        // Initializes the system directories
+        initSystemDir();
 
         root = new File(systemDirectory + "/root");
 
@@ -119,9 +121,9 @@ public class CloudCore extends Thread {
         // initBackup();
         // initBackupPoint();
 
-        addOperation(new Operation(Type.LISTDIR, name + Operation.SEPARATOR + "." + Operation.SEPARATOR + "."));
+        /*  NOTIFY GUI SYSTEM IS READY TO USE   */
 
-        // Starts the system
+        // System core process
         while (true) {
             try {
                 // Gets the next operation
@@ -136,84 +138,14 @@ public class CloudCore extends Thread {
 
                     switch (next.getType()) {
                         case DELETE:
-                            // If local, Gets the path and tries to delete the file or directory
-                            if (node.equals(name)) {
-                                String path = next.getParam().split(Operation.SEPARATOR)[1];
-                                String remoteOperationId = next.getParam().split(Operation.SEPARATOR)[2];
-                                // Semaphore needed!
-                                if (delete(path)) {
-                                    if (remoteOperationId.equals(".")) {
-                                        System.out.println("Deleted!");
-                                        // Confirm local operation
-                                    }
-                                    else {
-                                        // New Confirm Operation
-                                        // Send it to the corresponding RemoteSender
-                                    }
-                                }
-                                else {
-                                    if (remoteOperationId.equals(".")) {
-                                        System.out.println("Couldn't delete...");
-                                        // Fail local operation
-                                    }
-                                    else {
-                                        // New Fail Operation
-                                        // Send it to the corresponding RemoteSender
-                                    }
-                                }
-                            }
-                            // Else, pass this operation to the corresponding RemoteSender
-                            else {
-                                remoteSenderThreads.get(node).addOperation(next);
-                            }
+                            opDelete(node, next);
                             break;
                         case MKDIR:
-                            // If local, Gets the path and tries to create the directory
-                            if (node.equals(name)) {
-                                String path = next.getParam().split(Operation.SEPARATOR)[1];
-                                System.out.println(path);
-                                String remoteOperationId = next.getParam().split(Operation.SEPARATOR)[2];
-                                // Semaphore needed!
-                                if (createDirectory(path)) {
-                                    if (remoteOperationId.equals(".")) {
-                                        System.out.println("Directory Created!");
-                                        // Confirm local operation
-                                    }
-                                    else {
-                                        // New Confirm Operation
-                                        // Send it to the corresponding RemoteSender
-                                    }
-                                }
-                                else {
-                                    if (remoteOperationId.equals(".")) {
-                                        System.out.println("Couldn't create the directory...");
-                                        // Fail local operation
-                                    }
-                                    else {
-                                        // New Fail Operation
-                                        // Send it to the corresponding RemoteSender
-                                    }
-                                }
-                            }
-                            // Else, pass this operation to the corresponding RemoteSender
-                            else {
-                                remoteSenderThreads.get(node).addOperation(next);
-                            }
-                            // Semaphore needed!
+                            opMkdir(node, next);
                             break;
-                        case LISTDIR:
-                            // If local, gets the content of the local dir
-                            if (node.equals(name)) {
-                                String path = next.getParam().split(Operation.SEPARATOR)[1];
-                                // Semaphore needed!
-                                if (isCloudDir(path)) {
-                                    listdir(path);
-                                }
-                                else {
-                                    System.out.println("Couldn't find the dir: " + path);
-                                }
-                            }
-                            // Else (requested dir is remote), ?
+                        case LISTDIR: // ALWAYS LOCAL
+                            String path = next.getParam();
+                            opListdir(path);
                             break;
                         case TRANSFER:
                             // Note: An operation transfer will never has the sender node as the local node.
@@ -238,6 +170,16 @@ public class CloudCore extends Thread {
                 e.printStackTrace();
             }
         }
+    }
+
+    /*  LOCAL ONLY METHODS  */
+
+    /**
+     * Initializes the needed directories of the Network Cloud system. Checks if already exist,
+     * and if not, creates them.
+     */
+    private void initSystemDir() {
+
     }
 
     /**
@@ -285,6 +227,75 @@ public class CloudCore extends Thread {
     }
 
     /**
+     * <code>DELETE</code> {@link model.Operation Operation} process.
+     * @param node the involved node.
+     * @param next the {@link model.Operation Operation} to do.
+     */
+    private void opDelete(String node, Operation next) {
+        // If local, Gets the path and tries to delete the file or directory
+        if (node.equals(name)) {
+            String path = next.getParam().split(Operation.SEPARATOR)[1];
+            // Semaphore needed!
+            if (delete(path)) {
+                // Update GUIs
+            }
+            else {
+                // Error message?
+            }
+        }
+        // Else, pass this operation to the corresponding RemoteSender
+        else {
+            remoteSenderThreads.get(node).addOperation(next);
+        }
+    }
+
+    /**
+     * <code>MKDIR</code> {@link model.Operation Operation} process.
+     * @param node the involved node.
+     * @param next the {@link model.Operation Operation} to do.
+     */
+    private void opMkdir(String node, Operation next) {
+        // If local, Gets the path and tries to create the directory
+        // Semaphore needed!
+        if (node.equals(name)) {
+            String path = next.getParam().split(Operation.SEPARATOR)[1];
+            // Semaphore needed!
+            if (createDirectory(path)) {
+                // Update GUIs
+            }
+            else {
+                // Error message?
+            }
+        }
+        // Else, pass this operation to the corresponding RemoteSender
+        else {
+            remoteSenderThreads.get(node).addOperation(next);
+        }
+    }
+
+    /**
+     * <code>LISTDIR</code> {@link model.Operation Operation} process.
+     * @param path the local path to display.
+     */
+    private void opListdir(String path) {
+        // Semaphore needed!
+        if (isCloudDir(path)) {
+            ArrayList<String> filesInfo = new ArrayList<>();
+
+            for (File file : new File(root.getAbsolutePath() + "/" + path).listFiles()) {
+                filesInfo.add(file.getName() + Operation.SEPARATOR + file.lastModified() + Operation.SEPARATOR + file.isDirectory());
+            }
+
+            listdir(filesInfo);
+        }
+        else {
+            // Couldn't find local dir
+        }
+    }
+
+    /*  SYSTEM FUNCTIONS   */
+
+    /**
      * Add a new {@link model.RemoteReceiver} thread to the list. This method has
      * to be called only by the {@link model.ConnectionPoint ConnectionPoint} thread,
      * wich must be previously created.
@@ -319,7 +330,7 @@ public class CloudCore extends Thread {
      * @return <code>true</code> if the directory was created. <code>false</code>
      * otherwise.
      */
-    public boolean createDirectory(String path) {
+    private boolean createDirectory(String path) {
         return new File(root.getAbsolutePath() + "/" + path).mkdir();
     }
 
@@ -330,8 +341,15 @@ public class CloudCore extends Thread {
      * @return <code>true</code> if and only if the file or directory is successfully 
      * deleted; <code>false</code> otherwise.
      */
-    public boolean delete(String path) {
-        return new File(root.getAbsolutePath() + "/" +path).delete();
+    private boolean delete(String path) {
+        return new File(root.getAbsolutePath() + "/" + path).delete();
+    }
+
+    /**
+     * @return the name of this node.
+     */
+    public String getNodeName() {
+        return name;
     }
 
     /**
@@ -358,16 +376,16 @@ public class CloudCore extends Thread {
         File dir = new File(root.getAbsolutePath() + "/" + path);
         return dir.exists() && dir.isDirectory();
     }
-
+    
     /**
-     * Prints to screen the content of the (previously existence confirmed) directory.
-     * Actually this function has to be replaced with the comunication with the {@link
-     * controller.Controller Controller} method to display it the view.
-     * @param path the path relative to <code>systemDirectory root</code>.
+     * <b>GUI Interface</b>
+     * Sends to the {@link controller.Controller controller} the list of files to
+     * display in the GUI.
+     * @param files the list of files (filename, last modified time in millis and
+     * if its dir or not) to display.
      */
-    public void listdir(String path) {
-        File dir = new File(root.getAbsolutePath() + "/" + path);
-        for (String file : dir.list()) System.out.println(file);
+    public void listdir(ArrayList<String> files) {
+        controller.listFiles(files);;
     }
 
 }

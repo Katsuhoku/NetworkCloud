@@ -38,6 +38,9 @@ public class Operation {
 
     public static final String SEPARATOR = ":";
 
+    public static final String SEND_DATA = "data";
+    public static final String SEND_INFO = "info";
+
     /**
      * Constructs an instance of Operation specifing all atributes separately
      * @param local this local node name.

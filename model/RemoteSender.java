@@ -2,6 +2,7 @@ package model;
 
 import java.net.Socket;
 import java.net.UnknownHostException;
+import java.util.ArrayList;
 
 import org.json.JSONObject;
 
@@ -112,25 +113,59 @@ public class RemoteSender extends Thread {
                                 break;
 
                             case SEND:
+                                String requested = op.getParam().split(Operation.SEPARATOR)[2];
                                 f = new File(op.getParam().split(Operation.SEPARATOR)[1]);
-                                if (f.exists() && f.isFile()){
-                                    bf = new BufferedInputStream(new FileInputStream(f));
-                                    //Sends filename
-                                    dout.writeUTF(f.getName());
-                                    dout.flush();
-                                    //Sends file size
-                                    dout.writeLong(f.length());
-                                    dout.flush();
-                                    //Sends file data by chunks
-                                    while ((count = bf.read(b)) != -1) {
-                                        dout.write(b, 0, count);
+
+                                // Sends what was requested
+                                dout.writeUTF(requested);
+                                
+                                // If the requested data is the file data
+                                if (requested.equals(Operation.SEND_DATA)) {
+                                    if (f.exists() && f.isFile()){
+                                        bf = new BufferedInputStream(new FileInputStream(f));
+                                        //Sends filename
+                                        dout.writeUTF(f.getName());
                                         dout.flush();
+                                        //Sends file size
+                                        dout.writeLong(f.length());
+                                        dout.flush();
+                                        //Sends file data by chunks
+                                        while ((count = bf.read(b)) != -1) {
+                                            dout.write(b, 0, count);
+                                            dout.flush();
+                                        }
+                                        //Sends file last modified
+                                        dout.writeLong(f.lastModified());
+                                        dout.flush();
+                                        bf.close();
                                     }
-                                    //Sends file last modified
-                                    dout.writeLong(f.lastModified());
-                                    dout.flush();
-                                    bf.close();
+                                    else {
+                                        // The file doesn't exists, or is directory, but
+                                        // what to do?
+                                    }
                                 }
+                                // Else, the requested data is directory info
+                                else {
+                                    if (f.exists() && f.isDirectory()) {
+                                        ArrayList<String> filesInfo = new ArrayList<>();
+
+                                        for (File file : f.listFiles()){
+                                            // Structure: Filename/Last Modified Time (in millis)/true if directory, false otherwise
+                                            filesInfo.add(file.getName() + Operation.SEPARATOR + file.lastModified() + Operation.SEPARATOR + file.isDirectory());
+                                        }
+
+                                        // Sends one by one
+                                        dout.writeInt(filesInfo.size());
+                                        for (int i = 0; i < filesInfo.size(); i++) {
+                                            dout.writeUTF(filesInfo.get(i));
+                                        }
+                                    }
+                                    else {
+                                        // The directory doesn't exist, but
+                                        // what to do?
+                                    }
+                                }
+                                
                                 break;
                             case DELETE:
                             case MKDIR:
