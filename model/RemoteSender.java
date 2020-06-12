@@ -113,6 +113,9 @@ public class RemoteSender extends Thread {
                                 break;
 
                             case SEND:
+                                // Blocks system until sending finnishes
+                                core.requestSend();
+
                                 String requested = op.getParam().split(Operation.SEPARATOR)[2];
                                 f = new File(op.getParam().split(Operation.SEPARATOR)[1]);
 
@@ -165,6 +168,9 @@ public class RemoteSender extends Thread {
                                         // what to do?
                                     }
                                 }
+
+                                // Sending has finnished
+                                core.endSend();
                                 
                                 break;
                             case DELETE:
@@ -186,6 +192,8 @@ public class RemoteSender extends Thread {
                 }catch (InterruptedException | IOException e1) {
                     //Error?
                 }
+            } catch (InterruptedException e) {
+                break; // ??
             }
         }
     }

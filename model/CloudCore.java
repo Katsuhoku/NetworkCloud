@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.concurrent.Semaphore;
 
 import controller.Controller;
 
@@ -91,12 +92,40 @@ public class CloudCore extends Thread {
      */
     private File root;
 
+    /**
+     * <code>DELETE - SEND</code> <b>Synchronization</b>
+     * <p>
+     * Currently sending data RemoteSender threads count.
+     */
+    private int sendingCount;
+
+    /**
+     * <code>DELETE - SEND</code> <b>Synchronization</b>
+     * <p>
+     * Semaphores for Readers/Writers problem.
+     */
+    private Semaphore x, y, z, del, send;
+
+    /**
+     * Incoming files and dir data mutex.
+     */
+    private Semaphore recv;
+
     public CloudCore(Controller controller, JSONObject config) {
         this.controller = controller;
         this.config = config;
 
         remoteReceiverThreads = new ArrayList<>();
         remoteSenderThreads = new HashMap<>();
+
+        sendingCount = 0;
+        x = new Semaphore(1, true);
+        y = new Semaphore(1, true);
+        z = new Semaphore(1, true);
+        del = new Semaphore(1, true);
+        send = new Semaphore(1, true);
+
+        recv = new Semaphore(1, true);
     }
 
     @Override
@@ -230,8 +259,12 @@ public class CloudCore extends Thread {
      * <code>DELETE</code> {@link model.Operation Operation} process.
      * @param node the involved node.
      * @param next the {@link model.Operation Operation} to do.
+     * @throws InterruptedException
      */
-    private void opDelete(String node, Operation next) {
+    private void opDelete(String node, Operation next) throws InterruptedException {
+        // Blocks system until deleting finnishes
+        requestDelete();
+
         // If local, Gets the path and tries to delete the file or directory
         if (node.equals(name)) {
             String path = next.getParam().split(Operation.SEPARATOR)[1];
@@ -247,6 +280,9 @@ public class CloudCore extends Thread {
         else {
             remoteSenderThreads.get(node).addOperation(next);
         }
+
+        // Deleting finnished
+        endDelete();
     }
 
     /**
@@ -302,6 +338,7 @@ public class CloudCore extends Thread {
      * @param thread the new instance of {@link model.RemoteReceiver RemoteReceiver}.
      */
     public void addRemoteReceiver(RemoteReceiver thread) {
+        thread.setMutex(recv);
         thread.start();
         remoteReceiverThreads.add(thread);
     }
@@ -386,6 +423,56 @@ public class CloudCore extends Thread {
      */
     public void listdir(ArrayList<String> files) {
         controller.listFiles(files);;
+    }
+
+    /*  DELETE - SEND SYNCRHONIZATION METHODS   */
+
+    /**
+     * Request the system for a <code>SEND</code> {@link model.Operation Operation}.
+     * System cannot <code>DELETE</code> if is sending data.
+     * @throws InterruptedException
+     */
+    public void requestSend() throws InterruptedException {
+        z.acquire();
+            send.acquire();
+                x.acquire();
+                    if (++sendingCount == 1) del.acquire();
+                x.release();
+            send.release();
+        z.release();
+    }
+
+    /**
+     * Notifies that a <code>SEND</code> {@link model.Operation Operation} has ended.
+     * @throws InterruptedException
+     */
+    public void endSend() throws InterruptedException {
+        x.acquire();
+            if (--sendingCount == 0) del.release();
+        x.release();
+    }
+
+    /**
+     * Request the system for a <code>DELETE</code> {@link mode.Operation Operation}.
+     * System cannot <code>SEND</code> if is deleting data.
+     * @throws InterruptedException
+     */
+    private void requestDelete() throws InterruptedException {
+        y.acquire();
+            send.acquire();
+        y.release();
+        del.acquire();
+    }
+
+    /**
+     * Notifies that a <code>DELETE</code> {@link model.Operation Operation} has ended.
+     * @throws InterruptedException
+     */
+    private void endDelete() throws InterruptedException {
+        del.release();
+        y.acquire();
+            send.release();
+        y.release();
     }
 
 }

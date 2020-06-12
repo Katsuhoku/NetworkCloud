@@ -27,8 +27,8 @@ public class Controller {
 
     public static void main(String[] args) throws IOException {
         Controller controller = new Controller();
-        // controller.initCore();
-        controller.initWindow();
+        controller.initCore();
+        // controller.initWindow();
 
         // Getting file Name, Last Modified Date
         // DateFormat df = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");

@@ -9,6 +9,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.concurrent.Semaphore;
 
 import model.Operation.Type;
 
@@ -29,11 +30,21 @@ import model.Operation.Type;
  */
 
 public class RemoteReceiver extends Thread {
-    // System core
+    /**
+     * This system {@link model.CloudCore core}.
+     */
     private CloudCore core;
 
-    // Communication Socket
+    /**
+     * Socket for receiving data from other nodes.
+     */
     private Socket receiver;
+
+    /**
+     * Semaphore for receiver's sychronization. Only one file or dir data can
+     * be received at time.
+     */
+    private Semaphore mutex;
 
     /**
      * Creates an instance of this thread to manage incoming messages and data.
@@ -45,7 +56,10 @@ public class RemoteReceiver extends Thread {
     public RemoteReceiver(CloudCore core, Socket receiver) {
         this.core = core;
         this.receiver = receiver;
-        // receiver.setSoTimeout(timeout);
+    }
+
+    public void setMutex(Semaphore mutex) {
+        this.mutex = mutex;
     }
 
     @Override
@@ -75,7 +89,10 @@ public class RemoteReceiver extends Thread {
                         String[] params = din.readUTF().split(Operation.SEPARATOR);
                         core.addOperation(new Operation(Type.SEND, params[1] + Operation.SEPARATOR + params[2] + Operation.SEPARATOR + params[3]));
                         break;
-                    case SEND: 
+                    case SEND:
+                        // Blocks the other receiving threads
+                        mutex.acquire();
+
                         // This node's requested data
                         String receiving = din.readUTF();
 
@@ -111,6 +128,9 @@ public class RemoteReceiver extends Thread {
                         }
                         // Note: What if the requested dir/file wasn't available?
                         // Need add confirmation of existence
+
+                        // File received
+                        mutex.release();
                         break;
                 }
             }
@@ -123,6 +143,8 @@ public class RemoteReceiver extends Thread {
                 } catch (IOException e1) {
                     
                 }
-        } 
+        } catch (InterruptedException e) {
+            // ??
+        }
     }
 }
