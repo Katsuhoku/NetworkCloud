@@ -7,7 +7,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import controller.Controller;
-import model.Operation.Status;
 import model.Operation.Type;
 
 /**
@@ -15,6 +14,10 @@ import model.Operation.Type;
  * {@link model.Queue Master Operation Queue}, delegate remote operations to the
  * {@link model.Queue Subordinated Operation Queues} and do all local
  * operations. (FileTable class is no longer needed)
+ * <p>
+ * <b>Katsushika/2020/06/11:</b> {@link model.Operation Operation} History is no
+ * longer needed due to the elimination of Operation replies. Also, the cases
+ * <code>CONFIRM</code> and <code>FAIL</code> were removed.
  */
 
 public class CloudCore extends Thread {
@@ -84,11 +87,6 @@ public class CloudCore extends Thread {
     private Queue masterQueue;
 
     /**
-     * This node's {@link model.Operation Operations} History.
-     */
-    private Queue history;
-
-    /**
      * This node's root directory. It gets constructed using the <code>
      * systemDirectory</code> path.
      */
@@ -115,15 +113,13 @@ public class CloudCore extends Thread {
         // Initializes the Master Queue
         initMasterQueue();
 
-        initHistory();
-
         // Starts all other system sections
         // initConnectionPoint();
         // initRemoteConnections();
         // initBackup();
         // initBackupPoint();
 
-        addOperation(new Operation(name, "local", 1, Type.LISTDIR, name + Operation.SEPARATOR + "." + Operation.SEPARATOR + ".", Status.UNKNOWN));
+        addOperation(new Operation(Type.LISTDIR, name + Operation.SEPARATOR + "." + Operation.SEPARATOR + "."));
 
         // Starts the system
         while (true) {
@@ -136,14 +132,14 @@ public class CloudCore extends Thread {
                     System.out.println(next);
 
                     // Obtain the node involved
-                    String node = next.getMsg().split(Operation.SEPARATOR)[0];
+                    String node = next.getParam().split(Operation.SEPARATOR)[0];
 
                     switch (next.getType()) {
                         case DELETE:
                             // If local, Gets the path and tries to delete the file or directory
                             if (node.equals(name)) {
-                                String path = next.getMsg().split(Operation.SEPARATOR)[1];
-                                String remoteOperationId = next.getMsg().split(Operation.SEPARATOR)[2];
+                                String path = next.getParam().split(Operation.SEPARATOR)[1];
+                                String remoteOperationId = next.getParam().split(Operation.SEPARATOR)[2];
                                 // Semaphore needed!
                                 if (delete(path)) {
                                     if (remoteOperationId.equals(".")) {
@@ -174,9 +170,9 @@ public class CloudCore extends Thread {
                         case MKDIR:
                             // If local, Gets the path and tries to create the directory
                             if (node.equals(name)) {
-                                String path = next.getMsg().split(Operation.SEPARATOR)[1];
+                                String path = next.getParam().split(Operation.SEPARATOR)[1];
                                 System.out.println(path);
-                                String remoteOperationId = next.getMsg().split(Operation.SEPARATOR)[2];
+                                String remoteOperationId = next.getParam().split(Operation.SEPARATOR)[2];
                                 // Semaphore needed!
                                 if (createDirectory(path)) {
                                     if (remoteOperationId.equals(".")) {
@@ -208,7 +204,7 @@ public class CloudCore extends Thread {
                         case LISTDIR:
                             // If local, gets the content of the local dir
                             if (node.equals(name)) {
-                                String path = next.getMsg().split(Operation.SEPARATOR)[1];
+                                String path = next.getParam().split(Operation.SEPARATOR)[1];
                                 // Semaphore needed!
                                 if (isCloudDir(path)) {
                                     listdir(path);
@@ -218,16 +214,6 @@ public class CloudCore extends Thread {
                                 }
                             }
                             // Else (requested dir is remote), ?
-                            break;
-                        case CONFIRM:
-                            // Get the node involved
-                            // If remote, pass this operation to the corresponding RemoteSender
-                            // Else, search in the operation history (not defined yet) and confirms.
-                            break;
-                        case FAIL:
-                            // Get the node involved
-                            // If remote, pass this operation to the corresponding RemoteSender
-                            // Else, search in the operation history (not defined yet) and marks as failed.
                             break;
                         case TRANSFER:
                             // Note: An operation transfer will never has the sender node as the local node.
@@ -259,13 +245,6 @@ public class CloudCore extends Thread {
      */
     private void initMasterQueue() {
         masterQueue = new Queue(systemDirectory + "/sysfiles/queues/master.q");
-    }
-
-    /**
-     * Initializes the {@link model.Operation Operation} history.
-     */
-    private void initHistory() {
-        history = new Queue(systemDirectory + "/sysfiles/queues/history.q");
     }
 
     /**

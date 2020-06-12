@@ -9,7 +9,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.Socket;
 
-import model.Operation.Status;
 import model.Operation.Type;
 
 /**
@@ -20,6 +19,12 @@ import model.Operation.Type;
  * A new one will be created when the remote node gets connected again. When
  * receives a message, this thread manages to put the corresponding operation in
  * the {@link model.Queue Master Queue}.
+ * 
+ * <p>
+ * <b>Katsushika/2020/06/11:</b> Switch cases "CONFIRM" and "FAIL" are no longer
+ * needed due to the elimination of {@link model.Operation Operation} replies.
+ * Also, {@link model.Operation Operation} constructors only requires Operation {@link 
+ * model.Operation.Type Type} and parameters.
  */
 
 public class RemoteReceiver extends Thread {
@@ -56,21 +61,17 @@ public class RemoteReceiver extends Thread {
             din = new DataInputStream(new BufferedInputStream(receiver.getInputStream()));
             while (true) {
                 switch(Operation.Type.valueOf(din.readUTF())){ //Reads operation
-                    case CONFIRM:
-                        break;
-                    case FAIL:
-                        break;
                     case LISTDIR:
                         break;
     
                     case DELETE:
-                        core.addOperation(new Operation(core.getName(), "local", -1, Type.DELETE, din.readUTF(), Status.UNKNOWN));
+                        core.addOperation(new Operation(Type.DELETE, din.readUTF()));
                         break;
                     case MKDIR:
-                        core.addOperation(new Operation(core.getName(), "local", -1, Type.MKDIR, din.readUTF(), Status.UNKNOWN));
+                        core.addOperation(new Operation(Type.MKDIR, din.readUTF()));
                         break;
                     case TRANSFER:
-                        core.addOperation(new Operation(core.getName(), "local", -1, Type.SEND, din.readUTF(), Status.UNKNOWN));
+                        core.addOperation(new Operation(Type.SEND, din.readUTF()));
                         break;
                     case SEND: //Receives a file and save it into the received files directory
                         f = new File(core.getReceivedFilesDirectory() + '/' + din.readUTF());//Reads the file name
@@ -90,7 +91,7 @@ public class RemoteReceiver extends Thread {
                 }
             }
         } catch (FileNotFoundException e) {
-            // TODO Auto-generated catch block
+            // But, why?
         } catch (IOException e) {
             if (receiver.isConnected())
                 try {

@@ -5,8 +5,6 @@ import java.net.UnknownHostException;
 
 import org.json.JSONObject;
 
-import apple.laf.JRSUIConstants.Orientation;
-
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.DataOutputStream;
@@ -110,15 +108,11 @@ public class RemoteSender extends Thread {
                         dout.writeUTF(op.getType().name());
                         dout.flush();
                         switch (op.getType()){
-                            case CONFIRM:
-                                break;
-                            case FAIL:
-                                break;
                             case LISTDIR:
                                 break;
 
                             case SEND:
-                                f = new File(op.getMsg().split(Operation.SEPARATOR)[1]);
+                                f = new File(op.getParam().split(Operation.SEPARATOR)[1]);
                                 if (f.exists() && f.isFile()){
                                     bf = new BufferedInputStream(new FileInputStream(f));
                                     //Sends filename
@@ -141,7 +135,7 @@ public class RemoteSender extends Thread {
                             case DELETE:
                             case MKDIR:
                             case TRANSFER: 
-                                dout.writeUTF(op.getMsg());
+                                dout.writeUTF(op.getParam());
                                 dout.flush();
                                 break;
                         }

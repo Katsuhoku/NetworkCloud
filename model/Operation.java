@@ -9,29 +9,22 @@ package model;
  * <p>
  * The type of an operation indicates what has to do. The types are:
  * <blockquote>
- * <b>Transfer file
- * <b>Send file
- * <b>Delete file or directory
- * <b>Create directory
+ * <b>Transfer file,
+ * <b>Send file,
+ * <b>Delete file or directory,
+ * <b>Create directory,
  * <b>List directory content
- * <b>Confirm operation
- * <b>Mark failed operation
  * </blockquote>
  * For more information see documentation/System Operations
+ * <p>
+ * <b>Katsushika/2020/06/11:</b> <code>id</code>, <code>status</code> and <code>
+ * CONFIRM</code> and <code>FAIL</code> Operation Types, as <code>Status</code> enum
+ * are no longer needed due to the elimination of Operation replies.
+ * The <code>msg</code> field has been renamed to <code>param</code>.
+ * 
  */
 
 public class Operation {
-    /**
-     * The unique identifier for an instance of this class. The id is created with
-     * the name of the node and, if "Remote operation", with the name of the remote
-     * node.
-     * <p>
-     * <b>In case of remote:</b> <i>this_node_name/remote_node_name/serial_number</i>
-     * <p>
-     * <b>In case of local:</b> <i>this_node_name/local/serial_number</i>
-     */
-    private String id;
-
     /**
      * The type of the operation.
      */
@@ -39,17 +32,11 @@ public class Operation {
 
     /**
      * Additional message, if needed by the type of the operation. For example the
-     * nodes involved. Also includes the id of the operation that must be confirmed,
-     * in case of "Remote Operations"
+     * nodes involved. In other words, the Operation parameters.
      */
-    private String msg;
+    private String param;
 
     public static final String SEPARATOR = ":";
-
-    /**
-     * The current status of the operation.
-     */
-    private Status status;
 
     /**
      * Constructs an instance of Operation specifing all atributes separately
@@ -57,14 +44,12 @@ public class Operation {
      * @param remote remote node name. "local" in case of local operations.
      * @param counter operation serial number.
      * @param type the type of the operation.
-     * @param msg the additional information.
+     * @param param the additional information.
      * @param status the current status.
      */
-    public Operation(String local, String remote, int counter, Type type, String msg, Status status) {
-        this.id = local + "/" + remote + "/" + counter;
+    public Operation(Type type, String param) {
         this.type = type;
-        this.msg = msg;
-        this.status = status;
+        this.param = param;
     }
 
     /**
@@ -75,22 +60,13 @@ public class Operation {
      */
     public Operation(String csv) {
         String[] parts = csv.split(",");
-        id = parts[0];
-        type = Type.valueOf(parts[1]);
-        msg = parts[2];
-        status = Status.valueOf(parts[3]);
+        type = Type.valueOf(parts[0]);
+        param = parts[1];
     }
 
     @Override
     public String toString() {
-        return id +"," + type + "," + msg + "," + status;
-    }
-
-    /**
-     * @return this Operation instance's <code>{@link #id}</code>.
-     */
-    public String getId() {
-        return id;
+        return type + "," + param;
     }
 
     /**
@@ -101,25 +77,10 @@ public class Operation {
     }
 
     /**
-     * @return this Operation instance's <code>{@link #msg}</code>.
+     * @return this Operation instance's <code>{@link #param}</code>.
      */
-    public String getMsg() {
-        return msg;
-    }
-
-    /**
-     * @return this Operation instance's <code>{@link #status}</code>.
-     */
-    public Status getStatus() {
-        return status;
-    }
-
-    /**
-     * Change this Operation instance's status
-     * @param status the new {@link model.Operation.Status Status}
-     */
-    public void setStatus(Status status) {
-        this.status = status;
+    public String getParam() {
+        return param;
     }
 
     /**
@@ -130,17 +91,6 @@ public class Operation {
         SEND,
         DELETE,
         MKDIR,
-        LISTDIR,
-        CONFIRM,
-        FAIL
-    }
-    
-    /**
-     * Operation Statuses.
-     */
-    public enum Status {
-        CONFIRMED,
-        FAILED,
-        UNKNOWN
+        LISTDIR
     }
 }

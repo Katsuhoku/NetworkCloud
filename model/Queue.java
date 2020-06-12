@@ -3,8 +3,6 @@ package model;
 import java.io.IOException;
 import java.util.concurrent.Semaphore;
 
-import model.Operation.Status;
-
 /**
  * Class that represents the resource of an "Operation Queue".
  * <p>
@@ -13,6 +11,9 @@ import model.Operation.Status;
  * process, it's necessary guarantee that only one will be accessing it at time, so
  * it uses a <code>Semaphore</code> to this purpose.
  * It can represent both <b>Master</b> and <b>Subordinated</b> queues.
+ * <p>
+ * <b>Katsushika/2020/06/11:</b> <code>changeStatus()</code> method is no longer needed
+ * due to the elimination of Operation replies.
  */
 
 public class Queue {
@@ -112,50 +113,5 @@ public class Queue {
             file.write(content.toString());
             file.close();
         sem.release();
-    }
-
-    /**
-     * Changes the state of the {@link model.Operation Operation} with the specified
-     * id. The states are described in the {@link model.Operation Operation} class.
-     * <i>(not implemented yet)</i>
-     * 
-     * @param id    the identifier <code>String</code> of the Operation.
-     * @param status the new status.
-     * @return <code>true</code> if the solicited Operation was found and updated,
-     *         or <code>false</code> if not.
-     * @throws InterruptedException - if the thread accessing the resource gets
-     *                              interrumpted.
-     * @throws IOException
-     */
-    public boolean changeState(String id, Status status) throws InterruptedException, IOException {
-        // Block access
-        sem.acquire();
-            file.open(path, "r");
-            String content = file.read();
-            file.close();
-            if (content.isEmpty()) {
-                sem.release();
-                return false;
-            }
-
-            boolean found = false;
-            file.open(path, "w");
-            if (content.contains(id)) {
-                found = true;
-                String firstpart = content.split(id)[0]; // Before the desired Operation
-                String opcsv = id + content.split(id)[1].split("\n", 1)[0]; // The Operation CSV
-                String secondpart = "\n" + content.split(id)[1].split("\n", 1)[1]; // After the desired Operation
-
-                Operation aux = new Operation(opcsv);
-                aux.setStatus(status);
-
-                String newContent = firstpart + aux.toString() + secondpart; // Same content but with the desired Operation Status changed
-                file.write(newContent);
-            }
-            else file.write(content);
-            file.close();
-
-        sem.release();
-        return found;
     }
 }
