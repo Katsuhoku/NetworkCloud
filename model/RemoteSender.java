@@ -132,6 +132,9 @@ public class RemoteSender extends Thread {
                                         dout.write(b, 0, count);
                                         dout.flush();
                                     }
+                                    //Sends file last modified
+                                    dout.writeLong(f.lastModified());
+                                    dout.flush();
                                     bf.close();
                                 }
                                 break;
