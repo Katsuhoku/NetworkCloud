@@ -15,8 +15,8 @@ import controller.Controller;
 
 public class MainWindow extends JFrame {
     // Window properties
-    private final int MIN_WIDTH = 1280;
-    private final int MIN_HEIGHT = 720;
+    private final int MIN_WIDTH = 550;
+    private final int MIN_HEIGHT = 500;
     
     private Controller controller;
 

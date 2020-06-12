@@ -4,7 +4,9 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import javax.swing.BoxLayout;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import controller.Controller;
 
@@ -14,6 +16,9 @@ public class OperationsPanel extends JPanel {
     private JButton sendButton;
     private JButton deleteButton;
     private JButton createDirButton;
+    private JLabel loading;
+
+
     private Controller controller;
 
     public OperationsPanel(Controller controller) {
@@ -67,10 +72,13 @@ public class OperationsPanel extends JPanel {
             }
             
         });
+        System.out.println(System.getProperty("user.dir"));
+        loading = new JLabel(new ImageIcon("images/ajax-loader.gif"), JLabel.CENTER);
 
         add(openButton);
         add(sendButton);
         add(deleteButton);
         add(createDirButton);
+        add(loading);
     }
 }
