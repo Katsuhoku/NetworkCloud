@@ -13,7 +13,9 @@ import model.CloudCore;
 import model.FileHandler;
 import model.Operation;
 import model.Operation.Type;
+import views.FilesPanel;
 import views.MainWindow;
+import views.OperationsPanel;
 
 /**
  * Network System controller, an interface to communicate GUI and the system {@link 
@@ -28,7 +30,7 @@ public class Controller {
     public static void main(String[] args) throws IOException {
         Controller controller = new Controller();
         controller.initCore();
-        // controller.initWindow();
+        controller.initWindow();
 
         // Getting file Name, Last Modified Date
         // DateFormat df = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
@@ -174,4 +176,59 @@ public class Controller {
             System.out.println(f);
         }
     }
+
+
+    /*                  E   V   E   N   T   O   S               */
+    public void setBackButtonEnable(String nodeName, boolean b){
+        mainWindow.getMainPanel().getFilesPanel(nodeName).setBackButtonEnable(b);
+    }
+
+    public void setSendButtonEnable(boolean b){
+        mainWindow.getMainPanel().getOperationsPanel().setSendButtonEnable(b);
+    }
+
+    public void setOpenButtonEnable(boolean b){
+        mainWindow.getMainPanel().getOperationsPanel().setOpenButtonEnable(b);
+    }
+
+    public void setDeleteButtonEnable(boolean b){
+        mainWindow.getMainPanel().getOperationsPanel().setDeleteButtonEnable(b);
+    }
+
+    public void showFilesPanel(String nodeName){
+        mainWindow.getMainPanel().showFilesPanel(nodeName);
+        mainWindow.getMainPanel().getFilesPanel(nodeName).setOperationsButtons();
+    }
+
+    public void updatePath(String nodeName, String path){
+        mainWindow.getMainPanel().getFilesPanel(nodeName).updatePath(path);
+    }
+
+    public void updateTableData(String nodeName, ArrayList<String> files){
+        mainWindow.getMainPanel().getFilesPanel(nodeName).updateTableData(files);
+    }
+
+    public void makeDirectory(){
+
+    }
+
+    public void openDirectory(){
+        
+    }
+    
+    public void sendFile(){
+
+    }
+
+    public void delete(){
+
+    }
+
+    
+
+
+
+
+
+
 }

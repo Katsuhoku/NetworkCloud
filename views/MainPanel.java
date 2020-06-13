@@ -2,14 +2,20 @@ package views;
 
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.util.HashMap;
+import java.awt.CardLayout;
 import javax.swing.JPanel;
 import controller.Controller;
 
 public class MainPanel extends JPanel {
     private static final long serialVersionUID = 1L;
+
     private NodesPanel nodesPanel;
     private OperationsPanel operationsPanel;
-    private FilesPanel filesPanel;
+    
+    private JPanel filesPanelsParent;
+    private HashMap<String, FilesPanel> filesPanels;
+    private CardLayout cards;
 
     private Controller controller;
     
@@ -24,6 +30,7 @@ public class MainPanel extends JPanel {
         GridBagConstraints c;
         
         c = new GridBagConstraints();
+        //MODIFIRCAR NODE NAMES
         nodesPanel = new NodesPanel(controller, new String[] {"Nodo 1", "Nodo 2","Nodo 3", "Nodo 4"});
         c.gridx = 0;
         c.gridy = 1;
@@ -46,16 +53,44 @@ public class MainPanel extends JPanel {
         add(operationsPanel, c);
         
         
-        //Utilizar tarjetas
+        //Se utilizan tarjetas y una tabla hash 
+        
+        cards = new CardLayout();
+        filesPanels = new HashMap<>();
+        filesPanelsParent = new JPanel(cards);
+        //MODIFICAR NODE NAMES
+        for (String nodeName : new String[] {"Nodo 1", "Nodo 2","Nodo 3", "Nodo 4"}){
+            FilesPanel fp = new FilesPanel(controller, nodeName + "/");
+            filesPanels.put(nodeName, fp);
+            filesPanelsParent.add(fp, nodeName);
+        }
+            
         c = new GridBagConstraints();
-        filesPanel = new FilesPanel(controller);
         c.gridx = 1;
         c.gridy = 1;
         c.gridwidth = GridBagConstraints.REMAINDER;
         c.gridheight = 1;
         c.weighty = 1.0;
         c.fill = GridBagConstraints.BOTH;
-        add(filesPanel, c);
+        cards.show(filesPanelsParent, "Nodo 1");
+        add(filesPanelsParent, c);
+    }
+
+
+    public OperationsPanel getOperationsPanel(){
+        return operationsPanel;
+    }
+
+    public NodesPanel getNodesPanel(){
+        return nodesPanel;
+    }
+
+    public FilesPanel getFilesPanel(String nodeName){
+        return filesPanels.get(nodeName);
+    }
+
+    public void showFilesPanel(String nodeName){
+        cards.show(filesPanelsParent, nodeName);
     }
     
 }

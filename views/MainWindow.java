@@ -31,7 +31,7 @@ public class MainWindow extends JFrame {
 
     public void start() {
         setTitle("Network Cloud");
-        setExtendedState(getExtendedState() | JFrame.MAXIMIZED_BOTH);
+        //setExtendedState(getExtendedState() | JFrame.MAXIMIZED_BOTH);
         setMinimumSize(new Dimension(MIN_WIDTH, MIN_HEIGHT));
         setLocationRelativeTo(null);
 
@@ -56,5 +56,10 @@ public class MainWindow extends JFrame {
         setVisible(false);
         dispose();
         controller.exit();
+    }
+
+
+    public MainPanel getMainPanel(){
+        return mainPanel;
     }
 }

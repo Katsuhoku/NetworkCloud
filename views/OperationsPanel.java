@@ -29,6 +29,7 @@ public class OperationsPanel extends JPanel {
 
     public void init() {
         openButton = new JButton("Open");
+        openButton.setEnabled(false);
         openButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -40,6 +41,7 @@ public class OperationsPanel extends JPanel {
         });
 
         sendButton = new JButton("Send");
+        sendButton.setEnabled(false);
         sendButton.addActionListener(new ActionListener() {
 
             @Override
@@ -51,6 +53,7 @@ public class OperationsPanel extends JPanel {
         });
 
         deleteButton = new JButton("Delete");
+        deleteButton.setEnabled(false);
         deleteButton.addActionListener(new ActionListener() {
 
             @Override
@@ -72,13 +75,25 @@ public class OperationsPanel extends JPanel {
             }
             
         });
-        System.out.println(System.getProperty("user.dir"));
         loading = new JLabel(new ImageIcon("images/ajax-loader.gif"), JLabel.CENTER);
 
         add(openButton);
         add(sendButton);
         add(deleteButton);
         add(createDirButton);
-        add(loading);
+        //add(loading);
+    }
+
+
+    public void setSendButtonEnable(boolean b){
+        sendButton.setEnabled(b);
+    }
+
+    public void setOpenButtonEnable(boolean b){
+        openButton.setEnabled(b);
+    }
+
+    public void setDeleteButtonEnable(boolean b){
+        deleteButton.setEnabled(b);
     }
 }

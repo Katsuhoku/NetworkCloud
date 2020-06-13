@@ -27,7 +27,9 @@ public class NodesPanel extends JPanel {
             nodes[i].addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
-                    //Cambio de nodo
+                    //Cambio de nodo (Panel)
+                    //Llamar al controlador
+                    controller.showFilesPanel(((JButton)e.getSource()).getText());
                 }
             });
             add(nodes[i]);
