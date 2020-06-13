@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.concurrent.Semaphore;
 
 import controller.Controller;
@@ -27,6 +28,11 @@ public class CloudCore extends Thread {
      * user interface with this core.
      */
     private Controller controller;
+
+    /**
+     * System directories.
+     */
+    private LinkedHashMap<String, String> sysdirs;
 
     /**
      * The configurable parameters, specified in the <code>config.json</code> file.
@@ -116,6 +122,8 @@ public class CloudCore extends Thread {
         this.controller = controller;
         this.config = config;
 
+        sysdirs = new LinkedHashMap<>();
+
         remoteReceiverThreads = new ArrayList<>();
         remoteSenderThreads = new HashMap<>();
 
@@ -139,8 +147,6 @@ public class CloudCore extends Thread {
 
         // Initializes the system directories
         initSystemDir();
-
-        root = new File(systemDirectory + "/root");
 
         // Initializes the Master Queue
         initMasterQueue();
@@ -211,38 +217,40 @@ public class CloudCore extends Thread {
     private void initSystemDir() {
         String OS = System.getProperty("os.name").toLowerCase();
 
-        String[] dirlist = {
-            "root",
-            "backup",
-            "sysfiles",
-            "sysfiles/queues"
-        };
-
-        for (String dirname : dirlist) {
-            // If OS is UNIX-like (MacOS, Linux)
-            if (!dirname.equals("root") && (OS.contains("nix") || OS.contains("nux") || OS.contains("aix"))) dirname = "." + dirname;
-
-            File dir = new File(systemDirectory + "/" + dirname);
-            if (!dir.exists()) {
-                dir.mkdir();
-                // Every system dir except /root has to be hidden
-                if (!dirname.equals(dirlist[0]))
-                    try {
-                        // If OS is Windows
-                        if (OS.contains("win")) Files.setAttribute(dir.toPath(), "dos:hidden", true);
-                    } catch (IOException e) {
-                        e.printStackTrace(); // ??
-                    }
-            }
-            // What about existing a file with the name of the dirs? (without ext)
+        sysdirs.put("root", "/root");
+        sysdirs.put("recv", "/root/recv");
+        if (OS.contains("win")) {
+            sysdirs.put("backup", "/backup");
+            sysdirs.put("sysfiles", "/sysfiles");
+            sysdirs.put("queues", "/sysfiles/queues");
         }
+        else {
+            // In UNIX-like systems, gets hidden with "."
+            sysdirs.put("backup", "/.backup");
+            sysdirs.put("sysfiles", "/.sysfiles");
+            sysdirs.put("queues", "/.sysfiles/queues");
+        }
+
+        for (String key : sysdirs.keySet()) {
+            File dir = new File(systemDirectory + sysdirs.get(key));
+            if (!dir.exists()) dir.mkdir();
+            // What about existing a file with the name of the dirs? (without ext)
+
+            try { // Also if OS is Windows, set hidden attribute
+                if (OS.contains("win") && !sysdirs.get(key).contains("/root")) Files.setAttribute(dir.toPath(), "dos:hidden", true);
+            } catch (IOException e) {
+                // ?
+            }
+        }
+        
+        root = new File(getSystemRootDirectory());
     }
 
     /**
      * Initializes the Master {@link model.Operation Queue}.
      */
     private void initMasterQueue() {
-        masterQueue = new Queue(systemDirectory + "/sysfiles/queues/master.q");
+        masterQueue = new Queue(systemDirectory + sysdirs.get("queues") + "/master.q");
     }
 
     /**
@@ -345,7 +353,7 @@ public class CloudCore extends Thread {
         if (isCloudDir(path)) {
             ArrayList<String> filesInfo = new ArrayList<>();
 
-            for (File file : new File(root.getAbsolutePath() + "/" + path).listFiles()) {
+            for (File file : new File(getSystemRootDirectory() + "/" + path).listFiles()) {
                 filesInfo.add(file.getName() + Operation.SEPARATOR + file.lastModified() + Operation.SEPARATOR + file.isDirectory());
             }
 
@@ -395,7 +403,7 @@ public class CloudCore extends Thread {
      * otherwise.
      */
     private boolean createDirectory(String path) {
-        return new File(root.getAbsolutePath() + "/" + path).mkdir();
+        return new File(getSystemRootDirectory() + "/" + path).mkdir();
     }
 
     /**
@@ -406,7 +414,7 @@ public class CloudCore extends Thread {
      * deleted; <code>false</code> otherwise.
      */
     private boolean delete(String path) {
-        return new File(root.getAbsolutePath() + "/" + path).delete();
+        return new File(getSystemRootDirectory() + "/" + path).delete();
     }
 
     /**
@@ -417,18 +425,26 @@ public class CloudCore extends Thread {
     }
 
     /**
+     * @return the path on the local OS file system where is located the root
+     * of the Network Cloud storage.
+     */
+    public String getSystemRootDirectory() {
+       return systemDirectory + sysdirs.get("root") ;
+    }
+
+    /**
      * @return the path on the local OS file system where are located the {@link
      * model.Queue Operation Queues}.
      */
     public String getSystemQueuesDirectory() {
-        return systemDirectory + "/sysfiles/queues";
+        return systemDirectory + sysdirs.get("queues");
     }
 
     /**
      * @return the absolute path where incoming files will be saved.
      */
     public String getReceivedFilesDirectory() {
-        return root.getAbsolutePath() + "recv";
+        return systemDirectory + sysdirs.get("recv");
     }
 
     /**
@@ -437,7 +453,7 @@ public class CloudCore extends Thread {
      * @return <code>true</code> if exists, <code>false</code> otherwise.
      */
     public boolean isCloudDir(String path) {
-        File dir = new File(root.getAbsolutePath() + "/" + path);
+        File dir = new File(getSystemRootDirectory() + "/" + path);
         return dir.exists() && dir.isDirectory();
     }
     
@@ -449,7 +465,7 @@ public class CloudCore extends Thread {
      * if its dir or not) to display.
      */
     public void listdir(ArrayList<String> files) {
-        controller.listFiles(files);;
+        controller.listFiles(files);
     }
 
     /*  DELETE - SEND SYNCRHONIZATION METHODS   */
