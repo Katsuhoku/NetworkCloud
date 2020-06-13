@@ -13,9 +13,7 @@ import model.CloudCore;
 import model.FileHandler;
 import model.Operation;
 import model.Operation.Type;
-import views.FilesPanel;
 import views.MainWindow;
-import views.OperationsPanel;
 
 /**
  * Network System controller, an interface to communicate GUI and the system {@link 
