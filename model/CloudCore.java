@@ -94,12 +94,6 @@ public class CloudCore extends Thread {
     private Queue masterQueue;
 
     /**
-     * This node's root directory. It gets constructed using the <code>
-     * systemDirectory</code> path.
-     */
-    private File root;
-
-    /**
      * <code>DELETE - SEND</code> <b>Synchronization</b>
      * <p>
      * Currently sending data RemoteSender threads count.
@@ -152,12 +146,15 @@ public class CloudCore extends Thread {
         initMasterQueue();
 
         // Starts all other system sections
-        // initConnectionPoint();
-        // initRemoteConnections();
-        // initBackup();
-        // initBackupPoint();
+        initConnectionPoint();
+        initRemoteConnections();
+        initBackup();
+        initBackupPoint();
 
-        /*  NOTIFY GUI SYSTEM IS READY TO USE   */
+        // Notify GUI system is ready to use.
+        ArrayList<String> nodeNames = new ArrayList<>();
+        for (int i = 0; i < remoteNodes.length(); i++) nodeNames.add(remoteNodes.getJSONObject(i).getString("name"));
+        controller.notifyReady(nodeNames);
 
         // System core process
         while (true) {
@@ -242,8 +239,6 @@ public class CloudCore extends Thread {
                 // ?
             }
         }
-        
-        root = new File(getSystemRootDirectory());
     }
 
     /**
@@ -357,7 +352,7 @@ public class CloudCore extends Thread {
                 filesInfo.add(file.getName() + Operation.SEPARATOR + file.lastModified() + Operation.SEPARATOR + file.isDirectory());
             }
 
-            listdir(filesInfo);
+            listdir(name, filesInfo);
         }
         else {
             // Couldn't find local dir
@@ -464,8 +459,8 @@ public class CloudCore extends Thread {
      * @param files the list of files (filename, last modified time in millis and
      * if its dir or not) to display.
      */
-    public void listdir(ArrayList<String> files) {
-        controller.listFiles(files);
+    public void listdir(String node, ArrayList<String> files) {
+        controller.listFiles(node, files);
     }
 
     /*  DELETE - SEND SYNCRHONIZATION METHODS   */
@@ -516,6 +511,22 @@ public class CloudCore extends Thread {
         y.acquire();
             send.release();
         y.release();
+    }
+
+    /**
+     * Returns the name of the node with the IP address specified in the parameter.
+     * @param address the IP address to search
+     * @return the name of the node with that IP. Logically, it has to exist due system
+     * functionality, but returns <code>null</code> if the IP wasn't in the remote node's
+     * list.
+     */
+    public String getRemoteNodeName(String address) {
+        for (int i = 0; i < remoteNodes.length(); i ++) {
+            String aux = remoteNodes.getJSONObject(i).getString("address");
+            if (address.equals(aux)) return remoteNodes.getJSONObject(i).getString("name");
+        }
+
+        return null;
     }
 
 }

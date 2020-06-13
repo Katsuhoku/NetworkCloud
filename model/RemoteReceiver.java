@@ -36,6 +36,11 @@ public class RemoteReceiver extends Thread {
     private CloudCore core;
 
     /**
+     * The name of the remote node this thread is receiving from.
+     */
+    private String remoteNodeName;
+
+    /**
      * Socket for receiving data from other nodes.
      */
     private Socket receiver;
@@ -53,9 +58,10 @@ public class RemoteReceiver extends Thread {
      * @param receiver the socket created by the {@link model.ConnectionPoint
      *                 ConnectionPoint}.
      */
-    public RemoteReceiver(CloudCore core, Socket receiver) {
+    public RemoteReceiver(CloudCore core, Socket receiver, String remoteNodeName) {
         this.core = core;
         this.receiver = receiver;
+        this.remoteNodeName = remoteNodeName;
     }
 
     public void setMutex(Semaphore mutex) {
@@ -124,7 +130,7 @@ public class RemoteReceiver extends Thread {
                             }
 
                             // Then, passes the list to the core
-                            core.listdir(remoteFilesInfo);
+                            core.listdir(remoteNodeName, remoteFilesInfo);
                         }
                         // Note: What if the requested dir/file wasn't available?
                         // Need add confirmation of existence
@@ -146,5 +152,9 @@ public class RemoteReceiver extends Thread {
         } catch (InterruptedException e) {
             // ??
         }
+    }
+
+    public String getRemoteNodeName() {
+        return remoteNodeName;
     }
 }

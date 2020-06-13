@@ -2,9 +2,10 @@ package controller;
 
 import java.io.File;
 import java.io.IOException;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+
+import javax.swing.UIManager;
+import javax.swing.UnsupportedLookAndFeelException;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -16,9 +17,9 @@ import model.Operation.Type;
 import views.MainWindow;
 
 /**
- * Network System controller, an interface to communicate GUI and the system {@link 
- * model.CloudCore core}. The controller starts the system core and the GUI, then 
- * provide them all methdos to communicate.
+ * Network System controller, an interface to communicate GUI and the system
+ * {@link model.CloudCore core}. The controller starts the system core and the
+ * GUI, then provide them all methdos to communicate.
  */
 
 public class Controller {
@@ -29,19 +30,12 @@ public class Controller {
         Controller controller = new Controller();
         controller.initCore();
         controller.initWindow();
-
-        // Getting file Name, Last Modified Date
-        // DateFormat df = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
-        // File d = new File("D:/アニメ");
-        // for (File f : d.listFiles()) {
-        //     System.out.println(f.getName() + " " + df.format(f.lastModified()) + " " + f.isDirectory());
-        // }
     }
 
-    /*  CONTROLLER ONLY */
+    /* CONTROLLER ONLY */
 
     /**
-     * Initializes the system {@link model.CloudCore core} thread, only if there's 
+     * Initializes the system {@link model.CloudCore core} thread, only if there's
      * no problem with the configuration file.
      */
     private void initCore() {
@@ -58,8 +52,7 @@ public class Controller {
                 if (systemDirectory.isDirectory()) {
                     core = new CloudCore(this, config);
                     core.start(); // Start core
-                }
-                else {
+                } else {
                     System.out.println("Fatal Error: Specified path in configuration file must be a directory.");
                     System.exit(-1);
                 }
@@ -67,9 +60,8 @@ public class Controller {
                 System.out.println("Fatal Error: Cannot read configuration file.");
                 System.exit(-1);
             }
-            
-        }
-        else {
+
+        } else {
             System.out.println("Fatal Error: Cannot open configuration file.");
             System.exit(-1);
         }
@@ -79,6 +71,18 @@ public class Controller {
      * Creates and initializes the window frame for the GUI.
      */
     private void initWindow() {
+        try {
+            UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        } catch (InstantiationException e) {
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        } catch (UnsupportedLookAndFeelException e) {
+            e.printStackTrace();
+        }
+
         mainWindow = new MainWindow(this);
         mainWindow.start();
     }
@@ -169,10 +173,28 @@ public class Controller {
      * Sends to the GUI the file list to display.
      * @param files the file list information to display.
      */
-    public void listFiles(ArrayList<String> files) {
-        for (String f : files) {
-            System.out.println(f);
-        }
+    public void listFiles(String node, ArrayList<String> files) {
+        mainWindow.getMainPanel().getFilesPanel(node).updateTableData(files);
+    }
+
+    /**
+     * Notifies the GUI that the system is ready to use, and passes the list of
+     * connected remote node names.
+     * @param nodeNames the list of node names.
+     */
+    public void notifyReady(ArrayList<String> nodeNames) {
+        // Connect to GUI
+        // Before this method is called, the GUI must show only a charging screen,
+        // with all buttons and options disabled.
+    }
+
+    /**
+     * Notifies the GUI that an internal error has ocurred. The GUI has to put
+     * in the screen the passed message.
+     * @param msg the message to display.
+     */
+    public void notifyError(String msg) {
+        // Connect to GUI
     }
 
 
@@ -201,32 +223,4 @@ public class Controller {
     public void updatePath(String nodeName, String path){
         mainWindow.getMainPanel().getFilesPanel(nodeName).updatePath(path);
     }
-
-    public void updateTableData(String nodeName, ArrayList<String> files){
-        mainWindow.getMainPanel().getFilesPanel(nodeName).updateTableData(files);
-    }
-
-    public void makeDirectory(){
-
-    }
-
-    public void openDirectory(){
-        
-    }
-    
-    public void sendFile(){
-
-    }
-
-    public void delete(){
-
-    }
-
-    
-
-
-
-
-
-
 }
