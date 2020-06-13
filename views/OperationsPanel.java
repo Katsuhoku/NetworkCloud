@@ -3,6 +3,7 @@ package views;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -16,7 +17,8 @@ public class OperationsPanel extends JPanel {
     private JButton sendButton;
     private JButton deleteButton;
     private JButton createDirButton;
-    private JLabel loading;
+    private JButton updateButton;
+    private JLabel loader;
 
 
     private Controller controller;
@@ -29,6 +31,7 @@ public class OperationsPanel extends JPanel {
 
     public void init() {
         openButton = new JButton("Open");
+        openButton.setEnabled(false);
         openButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -40,6 +43,7 @@ public class OperationsPanel extends JPanel {
         });
 
         sendButton = new JButton("Send");
+        sendButton.setEnabled(false);
         sendButton.addActionListener(new ActionListener() {
 
             @Override
@@ -51,11 +55,22 @@ public class OperationsPanel extends JPanel {
         });
 
         deleteButton = new JButton("Delete");
+        deleteButton.setEnabled(false);
         deleteButton.addActionListener(new ActionListener() {
 
             @Override
             public void actionPerformed(ActionEvent e) {
                 //Elimina ya sea directorios o archivos, ya sean locales o remotos
+                //??
+            }
+            
+        });
+
+        updateButton = new JButton("Update");
+        updateButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                //Actualiza directorio actual
                 //??
             }
             
@@ -68,17 +83,38 @@ public class OperationsPanel extends JPanel {
             public void actionPerformed(ActionEvent e) {
                 //Crea directorio ya sea local o remoto
                 //??
-
             }
             
         });
-        System.out.println(System.getProperty("user.dir"));
-        loading = new JLabel(new ImageIcon("images/ajax-loader.gif"), JLabel.CENTER);
+
+        
+
+        loader = new JLabel(new ImageIcon("images/ajax-loader.gif"), JLabel.CENTER);
+        loader.setVisible(false);
 
         add(openButton);
         add(sendButton);
         add(deleteButton);
+        add(updateButton);
         add(createDirButton);
-        add(loading);
+        add(Box.createHorizontalGlue());
+        add(loader);
+    }
+
+
+    public void setSendButtonEnable(boolean b){
+        sendButton.setEnabled(b);
+    }
+
+    public void setOpenButtonEnable(boolean b){
+        openButton.setEnabled(b);
+    }
+
+    public void setDeleteButtonEnable(boolean b){
+        deleteButton.setEnabled(b);
+    }
+
+    public void setLoaderVisible(boolean b){
+        loader.setVisible(b);
     }
 }

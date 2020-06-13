@@ -15,8 +15,8 @@ import controller.Controller;
 
 public class MainWindow extends JFrame {
     // Window properties
-    private final int MIN_WIDTH = 550;
-    private final int MIN_HEIGHT = 500;
+    private final int MIN_WIDTH = 650;
+    private final int MIN_HEIGHT = 750;
     
     private Controller controller;
 
@@ -31,7 +31,7 @@ public class MainWindow extends JFrame {
 
     public void start() {
         setTitle("Network Cloud");
-        setExtendedState(getExtendedState() | JFrame.MAXIMIZED_BOTH);
+        //setExtendedState(getExtendedState() | JFrame.MAXIMIZED_BOTH);
         setMinimumSize(new Dimension(MIN_WIDTH, MIN_HEIGHT));
         setLocationRelativeTo(null);
 
@@ -56,5 +56,10 @@ public class MainWindow extends JFrame {
         setVisible(false);
         dispose();
         controller.exit();
+    }
+
+
+    public MainPanel getMainPanel(){
+        return mainPanel;
     }
 }
