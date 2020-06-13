@@ -3,6 +3,7 @@ package model;
 import org.json.*;
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.concurrent.Semaphore;
@@ -208,7 +209,27 @@ public class CloudCore extends Thread {
      * and if not, creates them.
      */
     private void initSystemDir() {
+        String[] dirlist = {
+            "/root",
+            "/backup",
+            "/sysfiles",
+            "/sysfiles/queues"
+        };
 
+        for (String dirname : dirlist) {
+            File dir = new File(systemDirectory + dirname);
+            if (!dir.exists()) {
+                dir.mkdir();
+                // Every system dir except /root has to be hidden
+                if (!dirname.equals(dirlist[0]))
+                    try {
+                        Files.setAttribute(dir.toPath(), "dos:hidden", true);
+                    } catch (IOException e) {
+                        e.printStackTrace(); // ??
+                    }
+            }
+            // What about existing a file with the name of the dirs? (without ext)
+        }
     }
 
     /**
