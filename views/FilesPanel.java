@@ -4,6 +4,7 @@ import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
 import javax.swing.ScrollPaneConstants;
@@ -30,6 +31,7 @@ public class FilesPanel extends JPanel{
     private JButton backButton;
     private JTextField pathField;
     private JTable table;
+    private JTextArea messages;
     
     private String nodeName;
 
@@ -51,8 +53,6 @@ public class FilesPanel extends JPanel{
         backButton = new JButton("<-");
         c.gridx = 0;
         c.gridy = 0;
-        c.weighty = 0.04;
-        c.weightx = 0.0001;
         c.fill = GridBagConstraints.BOTH;
         add(backButton, c);
         
@@ -64,7 +64,7 @@ public class FilesPanel extends JPanel{
         pathField.setEditable(false);
         pathField.setBorder(null);
         JScrollPane pathFieldScroll = new JScrollPane(pathField, ScrollPaneConstants.VERTICAL_SCROLLBAR_NEVER, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-        pathFieldScroll.setPreferredSize(new Dimension(0,35));
+        pathFieldScroll.setPreferredSize(new Dimension(0,0));
         c.gridx = 1;
         c.gridy = 0;
         c.weightx = 1.0;
@@ -76,8 +76,9 @@ public class FilesPanel extends JPanel{
         c.gridx = 0;
         c.gridy = 1;
         c.gridwidth = GridBagConstraints.REMAINDER;
-        c.gridheight = GridBagConstraints.REMAINDER;
+        c.gridheight = 1;
         c.weighty = 1.0;
+        c.weightx = 1.0;
         c.fill = GridBagConstraints.BOTH;
         table = new JTable(new DefaultTableModel(new String[] {"Filename", "Last Modified", "isDirectory"}, 0){
             private static final long serialVersionUID = 1L;
@@ -86,56 +87,6 @@ public class FilesPanel extends JPanel{
                 return false;
             }
         });
-        /*              ELIMINAR                */
-        DefaultTableModel d = (DefaultTableModel) table.getModel();
-        d.addRow(new Object[] {"Archivo 1", new SimpleDateFormat("dd-mm-yyyy hh:mm:ss").format(new Date(System.currentTimeMillis())), true});
-        d.addRow(new Object[] {"Archivo 2", new SimpleDateFormat("dd-mm-yyyy hh:mm:ss").format(new Date(System.currentTimeMillis())), false});
-        d.addRow(new Object[] {"Archivo 3", new SimpleDateFormat("dd-mm-yyyy hh:mm:ss").format(new Date(System.currentTimeMillis())), true});
-        d.addRow(new Object[] {"Archivo 1", new SimpleDateFormat("dd-mm-yyyy hh:mm:ss").format(new Date(System.currentTimeMillis())), true});
-        d.addRow(new Object[] {"Archivo 2", new SimpleDateFormat("dd-mm-yyyy hh:mm:ss").format(new Date(System.currentTimeMillis())), false});
-        d.addRow(new Object[] {"Archivo 3", new SimpleDateFormat("dd-mm-yyyy hh:mm:ss").format(new Date(System.currentTimeMillis())), true});d.addRow(new Object[] {"Archivo 1", new SimpleDateFormat("dd-mm-yyyy hh:mm:ss").format(new Date(System.currentTimeMillis())), true});
-        d.addRow(new Object[] {"Archivo 2", new SimpleDateFormat("dd-mm-yyyy hh:mm:ss").format(new Date(System.currentTimeMillis())), false});
-        d.addRow(new Object[] {"Archivo 3", new SimpleDateFormat("dd-mm-yyyy hh:mm:ss").format(new Date(System.currentTimeMillis())), true});
-        d.addRow(new Object[] {"Archivo 1", new SimpleDateFormat("dd-mm-yyyy hh:mm:ss").format(new Date(System.currentTimeMillis())), true});
-        d.addRow(new Object[] {"Archivo 2", new SimpleDateFormat("dd-mm-yyyy hh:mm:ss").format(new Date(System.currentTimeMillis())), false});
-        d.addRow(new Object[] {"Archivo 3", new SimpleDateFormat("dd-mm-yyyy hh:mm:ss").format(new Date(System.currentTimeMillis())), true});
-        d.addRow(new Object[] {"Archivo 1", new SimpleDateFormat("dd-mm-yyyy hh:mm:ss").format(new Date(System.currentTimeMillis())), true});
-        d.addRow(new Object[] {"Archivo 2", new SimpleDateFormat("dd-mm-yyyy hh:mm:ss").format(new Date(System.currentTimeMillis())), false});
-        d.addRow(new Object[] {"Archivo 3", new SimpleDateFormat("dd-mm-yyyy hh:mm:ss").format(new Date(System.currentTimeMillis())), true});
-        d.addRow(new Object[] {"Archivo 1", new SimpleDateFormat("dd-mm-yyyy hh:mm:ss").format(new Date(System.currentTimeMillis())), true});
-        d.addRow(new Object[] {"Archivo 2", new SimpleDateFormat("dd-mm-yyyy hh:mm:ss").format(new Date(System.currentTimeMillis())), false});
-        d.addRow(new Object[] {"Archivo 3", new SimpleDateFormat("dd-mm-yyyy hh:mm:ss").format(new Date(System.currentTimeMillis())), true});
-        d.addRow(new Object[] {"Archivo 1", new SimpleDateFormat("dd-mm-yyyy hh:mm:ss").format(new Date(System.currentTimeMillis())), true});
-        d.addRow(new Object[] {"Archivo 2", new SimpleDateFormat("dd-mm-yyyy hh:mm:ss").format(new Date(System.currentTimeMillis())), false});
-        d.addRow(new Object[] {"Archivo 3", new SimpleDateFormat("dd-mm-yyyy hh:mm:ss").format(new Date(System.currentTimeMillis())), true});
-        d.addRow(new Object[] {"Archivo 1", new SimpleDateFormat("dd-mm-yyyy hh:mm:ss").format(new Date(System.currentTimeMillis())), true});
-        d.addRow(new Object[] {"Archivo 2", new SimpleDateFormat("dd-mm-yyyy hh:mm:ss").format(new Date(System.currentTimeMillis())), false});
-        d.addRow(new Object[] {"Archivo 3", new SimpleDateFormat("dd-mm-yyyy hh:mm:ss").format(new Date(System.currentTimeMillis())), true});
-        d.addRow(new Object[] {"Archivo 1", new SimpleDateFormat("dd-mm-yyyy hh:mm:ss").format(new Date(System.currentTimeMillis())), true});
-        d.addRow(new Object[] {"Archivo 2", new SimpleDateFormat("dd-mm-yyyy hh:mm:ss").format(new Date(System.currentTimeMillis())), false});
-        d.addRow(new Object[] {"Archivo 3", new SimpleDateFormat("dd-mm-yyyy hh:mm:ss").format(new Date(System.currentTimeMillis())), true});
-        d.addRow(new Object[] {"Archivo 1", new SimpleDateFormat("dd-mm-yyyy hh:mm:ss").format(new Date(System.currentTimeMillis())), true});
-        d.addRow(new Object[] {"Archivo 2", new SimpleDateFormat("dd-mm-yyyy hh:mm:ss").format(new Date(System.currentTimeMillis())), false});
-        d.addRow(new Object[] {"Archivo 3", new SimpleDateFormat("dd-mm-yyyy hh:mm:ss").format(new Date(System.currentTimeMillis())), true});
-        d.addRow(new Object[] {"Archivo 1", new SimpleDateFormat("dd-mm-yyyy hh:mm:ss").format(new Date(System.currentTimeMillis())), true});
-        d.addRow(new Object[] {"Archivo 2", new SimpleDateFormat("dd-mm-yyyy hh:mm:ss").format(new Date(System.currentTimeMillis())), false});
-        d.addRow(new Object[] {"Archivo 3", new SimpleDateFormat("dd-mm-yyyy hh:mm:ss").format(new Date(System.currentTimeMillis())), true});
-        d.addRow(new Object[] {"Archivo 1", new SimpleDateFormat("dd-mm-yyyy hh:mm:ss").format(new Date(System.currentTimeMillis())), true});
-        d.addRow(new Object[] {"Archivo 2", new SimpleDateFormat("dd-mm-yyyy hh:mm:ss").format(new Date(System.currentTimeMillis())), false});
-        d.addRow(new Object[] {"Archivo 3", new SimpleDateFormat("dd-mm-yyyy hh:mm:ss").format(new Date(System.currentTimeMillis())), true});
-        d.addRow(new Object[] {"Archivo 1", new SimpleDateFormat("dd-mm-yyyy hh:mm:ss").format(new Date(System.currentTimeMillis())), true});
-        d.addRow(new Object[] {"Archivo 2", new SimpleDateFormat("dd-mm-yyyy hh:mm:ss").format(new Date(System.currentTimeMillis())), false});
-        d.addRow(new Object[] {"Archivo 3", new SimpleDateFormat("dd-mm-yyyy hh:mm:ss").format(new Date(System.currentTimeMillis())), true});
-        d.addRow(new Object[] {"Archivo 1", new SimpleDateFormat("dd-mm-yyyy hh:mm:ss").format(new Date(System.currentTimeMillis())), true});
-        d.addRow(new Object[] {"Archivo 2", new SimpleDateFormat("dd-mm-yyyy hh:mm:ss").format(new Date(System.currentTimeMillis())), false});
-        d.addRow(new Object[] {"Archivo 3", new SimpleDateFormat("dd-mm-yyyy hh:mm:ss").format(new Date(System.currentTimeMillis())), true});
-        d.addRow(new Object[] {"Archivo 1", new SimpleDateFormat("dd-mm-yyyy hh:mm:ss").format(new Date(System.currentTimeMillis())), true});
-        d.addRow(new Object[] {"Archivo 2", new SimpleDateFormat("dd-mm-yyyy hh:mm:ss").format(new Date(System.currentTimeMillis())), false});
-        d.addRow(new Object[] {"Archivo 3", new SimpleDateFormat("dd-mm-yyyy hh:mm:ss").format(new Date(System.currentTimeMillis())), true});
-        d.addRow(new Object[] {"Archivo 1", new SimpleDateFormat("dd-mm-yyyy hh:mm:ss").format(new Date(System.currentTimeMillis())), true});
-        d.addRow(new Object[] {"Archivo 2", new SimpleDateFormat("dd-mm-yyyy hh:mm:ss").format(new Date(System.currentTimeMillis())), false});
-        d.addRow(new Object[] {"Archivo 3", new SimpleDateFormat("dd-mm-yyyy hh:mm:ss").format(new Date(System.currentTimeMillis())), true});
-        /**/
         table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION); //Solo una fila seleccionada
         table.removeColumn(table.getColumnModel().getColumn(2));
         table.getSelectionModel().addListSelectionListener(new ListSelectionListener(){
@@ -148,9 +99,72 @@ public class FilesPanel extends JPanel{
                 }
             }
         });
-
+         /*              ELIMINAR                */
+         DefaultTableModel d = (DefaultTableModel) table.getModel();
+         d.addRow(new Object[] {"Archivo 1", new SimpleDateFormat("dd-mm-yyyy hh:mm:ss").format(new Date(System.currentTimeMillis())), true});
+         d.addRow(new Object[] {"Archivo 2", new SimpleDateFormat("dd-mm-yyyy hh:mm:ss").format(new Date(System.currentTimeMillis())), false});
+         d.addRow(new Object[] {"Archivo 3", new SimpleDateFormat("dd-mm-yyyy hh:mm:ss").format(new Date(System.currentTimeMillis())), true});
+         d.addRow(new Object[] {"Archivo 1", new SimpleDateFormat("dd-mm-yyyy hh:mm:ss").format(new Date(System.currentTimeMillis())), true});
+         d.addRow(new Object[] {"Archivo 2", new SimpleDateFormat("dd-mm-yyyy hh:mm:ss").format(new Date(System.currentTimeMillis())), false});
+         d.addRow(new Object[] {"Archivo 3", new SimpleDateFormat("dd-mm-yyyy hh:mm:ss").format(new Date(System.currentTimeMillis())), true});d.addRow(new Object[] {"Archivo 1", new SimpleDateFormat("dd-mm-yyyy hh:mm:ss").format(new Date(System.currentTimeMillis())), true});
+         d.addRow(new Object[] {"Archivo 2", new SimpleDateFormat("dd-mm-yyyy hh:mm:ss").format(new Date(System.currentTimeMillis())), false});
+         d.addRow(new Object[] {"Archivo 3", new SimpleDateFormat("dd-mm-yyyy hh:mm:ss").format(new Date(System.currentTimeMillis())), true});
+         d.addRow(new Object[] {"Archivo 1", new SimpleDateFormat("dd-mm-yyyy hh:mm:ss").format(new Date(System.currentTimeMillis())), true});
+         d.addRow(new Object[] {"Archivo 2", new SimpleDateFormat("dd-mm-yyyy hh:mm:ss").format(new Date(System.currentTimeMillis())), false});
+         d.addRow(new Object[] {"Archivo 3", new SimpleDateFormat("dd-mm-yyyy hh:mm:ss").format(new Date(System.currentTimeMillis())), true});
+         d.addRow(new Object[] {"Archivo 1", new SimpleDateFormat("dd-mm-yyyy hh:mm:ss").format(new Date(System.currentTimeMillis())), true});
+         d.addRow(new Object[] {"Archivo 2", new SimpleDateFormat("dd-mm-yyyy hh:mm:ss").format(new Date(System.currentTimeMillis())), false});
+         d.addRow(new Object[] {"Archivo 3", new SimpleDateFormat("dd-mm-yyyy hh:mm:ss").format(new Date(System.currentTimeMillis())), true});
+         d.addRow(new Object[] {"Archivo 1", new SimpleDateFormat("dd-mm-yyyy hh:mm:ss").format(new Date(System.currentTimeMillis())), true});
+         d.addRow(new Object[] {"Archivo 2", new SimpleDateFormat("dd-mm-yyyy hh:mm:ss").format(new Date(System.currentTimeMillis())), false});
+         d.addRow(new Object[] {"Archivo 3", new SimpleDateFormat("dd-mm-yyyy hh:mm:ss").format(new Date(System.currentTimeMillis())), true});
+         d.addRow(new Object[] {"Archivo 1", new SimpleDateFormat("dd-mm-yyyy hh:mm:ss").format(new Date(System.currentTimeMillis())), true});
+         d.addRow(new Object[] {"Archivo 2", new SimpleDateFormat("dd-mm-yyyy hh:mm:ss").format(new Date(System.currentTimeMillis())), false});
+         d.addRow(new Object[] {"Archivo 3", new SimpleDateFormat("dd-mm-yyyy hh:mm:ss").format(new Date(System.currentTimeMillis())), true});
+         d.addRow(new Object[] {"Archivo 1", new SimpleDateFormat("dd-mm-yyyy hh:mm:ss").format(new Date(System.currentTimeMillis())), true});
+         d.addRow(new Object[] {"Archivo 2", new SimpleDateFormat("dd-mm-yyyy hh:mm:ss").format(new Date(System.currentTimeMillis())), false});
+         d.addRow(new Object[] {"Archivo 3", new SimpleDateFormat("dd-mm-yyyy hh:mm:ss").format(new Date(System.currentTimeMillis())), true});
+         d.addRow(new Object[] {"Archivo 1", new SimpleDateFormat("dd-mm-yyyy hh:mm:ss").format(new Date(System.currentTimeMillis())), true});
+         d.addRow(new Object[] {"Archivo 2", new SimpleDateFormat("dd-mm-yyyy hh:mm:ss").format(new Date(System.currentTimeMillis())), false});
+         d.addRow(new Object[] {"Archivo 3", new SimpleDateFormat("dd-mm-yyyy hh:mm:ss").format(new Date(System.currentTimeMillis())), true});
+         d.addRow(new Object[] {"Archivo 1", new SimpleDateFormat("dd-mm-yyyy hh:mm:ss").format(new Date(System.currentTimeMillis())), true});
+         d.addRow(new Object[] {"Archivo 2", new SimpleDateFormat("dd-mm-yyyy hh:mm:ss").format(new Date(System.currentTimeMillis())), false});
+         d.addRow(new Object[] {"Archivo 3", new SimpleDateFormat("dd-mm-yyyy hh:mm:ss").format(new Date(System.currentTimeMillis())), true});
+         d.addRow(new Object[] {"Archivo 1", new SimpleDateFormat("dd-mm-yyyy hh:mm:ss").format(new Date(System.currentTimeMillis())), true});
+         d.addRow(new Object[] {"Archivo 2", new SimpleDateFormat("dd-mm-yyyy hh:mm:ss").format(new Date(System.currentTimeMillis())), false});
+         d.addRow(new Object[] {"Archivo 3", new SimpleDateFormat("dd-mm-yyyy hh:mm:ss").format(new Date(System.currentTimeMillis())), true});
+         d.addRow(new Object[] {"Archivo 1", new SimpleDateFormat("dd-mm-yyyy hh:mm:ss").format(new Date(System.currentTimeMillis())), true});
+         d.addRow(new Object[] {"Archivo 2", new SimpleDateFormat("dd-mm-yyyy hh:mm:ss").format(new Date(System.currentTimeMillis())), false});
+         d.addRow(new Object[] {"Archivo 3", new SimpleDateFormat("dd-mm-yyyy hh:mm:ss").format(new Date(System.currentTimeMillis())), true});
+         d.addRow(new Object[] {"Archivo 1", new SimpleDateFormat("dd-mm-yyyy hh:mm:ss").format(new Date(System.currentTimeMillis())), true});
+         d.addRow(new Object[] {"Archivo 2", new SimpleDateFormat("dd-mm-yyyy hh:mm:ss").format(new Date(System.currentTimeMillis())), false});
+         d.addRow(new Object[] {"Archivo 3", new SimpleDateFormat("dd-mm-yyyy hh:mm:ss").format(new Date(System.currentTimeMillis())), true});
+         d.addRow(new Object[] {"Archivo 1", new SimpleDateFormat("dd-mm-yyyy hh:mm:ss").format(new Date(System.currentTimeMillis())), true});
+         d.addRow(new Object[] {"Archivo 2", new SimpleDateFormat("dd-mm-yyyy hh:mm:ss").format(new Date(System.currentTimeMillis())), false});
+         d.addRow(new Object[] {"Archivo 3", new SimpleDateFormat("dd-mm-yyyy hh:mm:ss").format(new Date(System.currentTimeMillis())), true});
+         d.addRow(new Object[] {"Archivo 1", new SimpleDateFormat("dd-mm-yyyy hh:mm:ss").format(new Date(System.currentTimeMillis())), true});
+         d.addRow(new Object[] {"Archivo 2", new SimpleDateFormat("dd-mm-yyyy hh:mm:ss").format(new Date(System.currentTimeMillis())), false});
+         d.addRow(new Object[] {"Archivo 3", new SimpleDateFormat("dd-mm-yyyy hh:mm:ss").format(new Date(System.currentTimeMillis())), true});
+         d.addRow(new Object[] {"Archivo 1", new SimpleDateFormat("dd-mm-yyyy hh:mm:ss").format(new Date(System.currentTimeMillis())), true});
+         d.addRow(new Object[] {"Archivo 2", new SimpleDateFormat("dd-mm-yyyy hh:mm:ss").format(new Date(System.currentTimeMillis())), false});
+         d.addRow(new Object[] {"Archivo 3", new SimpleDateFormat("dd-mm-yyyy hh:mm:ss").format(new Date(System.currentTimeMillis())), true});
+         /**/
         JScrollPane tableScroll = new JScrollPane(table, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+        tableScroll.setPreferredSize(new Dimension(0, 0));
         add(tableScroll, c);
+
+        c = new GridBagConstraints();
+        messages = new JTextArea();
+        c.gridx = 0;
+        c.gridy = 2;
+        c.gridwidth = GridBagConstraints.REMAINDER;
+        c.gridheight = 1;
+        c.weightx = 1.0;
+        c.weighty = 0.1;
+        c.fill = GridBagConstraints.BOTH;
+        JScrollPane messagesScroll = new JScrollPane(messages, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+        messagesScroll.setPreferredSize(new Dimension(0, 0));
+        add(messagesScroll, c);
     }
 
     public void setBackButtonEnable(boolean b){

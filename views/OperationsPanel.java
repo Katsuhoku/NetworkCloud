@@ -3,6 +3,7 @@ package views;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -16,7 +17,8 @@ public class OperationsPanel extends JPanel {
     private JButton sendButton;
     private JButton deleteButton;
     private JButton createDirButton;
-    private JLabel loading;
+    private JButton updateButton;
+    private JLabel loader;
 
 
     private Controller controller;
@@ -64,6 +66,16 @@ public class OperationsPanel extends JPanel {
             
         });
 
+        updateButton = new JButton("Update");
+        updateButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                //Actualiza directorio actual
+                //??
+            }
+            
+        });
+
         createDirButton = new JButton("Create Directory");
         createDirButton.addActionListener(new ActionListener() {
 
@@ -71,17 +83,22 @@ public class OperationsPanel extends JPanel {
             public void actionPerformed(ActionEvent e) {
                 //Crea directorio ya sea local o remoto
                 //??
-
             }
             
         });
-        loading = new JLabel(new ImageIcon("images/ajax-loader.gif"), JLabel.CENTER);
+
+        
+
+        loader = new JLabel(new ImageIcon("images/ajax-loader.gif"), JLabel.CENTER);
+        loader.setVisible(false);
 
         add(openButton);
         add(sendButton);
         add(deleteButton);
+        add(updateButton);
         add(createDirButton);
-        //add(loading);
+        add(Box.createHorizontalGlue());
+        add(loader);
     }
 
 
@@ -95,5 +112,9 @@ public class OperationsPanel extends JPanel {
 
     public void setDeleteButtonEnable(boolean b){
         deleteButton.setEnabled(b);
+    }
+
+    public void setLoaderVisible(boolean b){
+        loader.setVisible(b);
     }
 }
