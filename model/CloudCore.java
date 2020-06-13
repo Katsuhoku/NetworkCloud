@@ -209,21 +209,27 @@ public class CloudCore extends Thread {
      * and if not, creates them.
      */
     private void initSystemDir() {
+        String OS = System.getProperty("os.name").toLowerCase();
+
         String[] dirlist = {
-            "/root",
-            "/backup",
-            "/sysfiles",
-            "/sysfiles/queues"
+            "root",
+            "backup",
+            "sysfiles",
+            "sysfiles/queues"
         };
 
         for (String dirname : dirlist) {
-            File dir = new File(systemDirectory + dirname);
+            // If OS is UNIX-like (MacOS, Linux)
+            if (!dirname.equals("root") && (OS.contains("nix") || OS.contains("nux") || OS.contains("aix"))) dirname = "." + dirname;
+
+            File dir = new File(systemDirectory + "/" + dirname);
             if (!dir.exists()) {
                 dir.mkdir();
                 // Every system dir except /root has to be hidden
                 if (!dirname.equals(dirlist[0]))
                     try {
-                        Files.setAttribute(dir.toPath(), "dos:hidden", true);
+                        // If OS is Windows
+                        if (OS.contains("win")) Files.setAttribute(dir.toPath(), "dos:hidden", true);
                     } catch (IOException e) {
                         e.printStackTrace(); // ??
                     }
