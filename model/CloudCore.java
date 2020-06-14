@@ -10,6 +10,7 @@ import java.util.LinkedHashMap;
 import java.util.concurrent.Semaphore;
 
 import controller.Controller;
+import javafx.scene.Node;
 
 /**
  * The core <code>Thread</code> of the system. CloudCore manages the
@@ -192,11 +193,10 @@ public class CloudCore extends Thread {
                             remoteSenderThreads.get(node).addOperation(next);
                             break;
                     }
-                    sleep(3000);
                 }
                 // If there's no more Operations, waits before checking again
                 else {
-                    sleep(2000);
+                    sleep(500);
                 }
             } catch (InterruptedException e) {
                 e.printStackTrace();
@@ -299,13 +299,14 @@ public class CloudCore extends Thread {
         // If local, Gets the path and tries to delete the file or directory
         if (node.equals(name)) {
             String path = next.getParam().split(Operation.SEPARATOR)[1];
-            // Semaphore needed!
-            if (delete(path)) {
-                // Update GUIs
+            if (!delete(path)) {
+                controller.notifyError("Error: Couldn't find \"" + path + "\". The directory/file may not exist or was already deleted.");
             }
-            else {
-                // Error message?
-            }
+            // Updates GUI
+            String[] dirs = path.split("/");
+            StringBuilder current = new StringBuilder();
+            for (int i = 0; i < dirs.length - 1; i++) current.append(dirs[i] + "/");
+            opListdir(current.toString());
         }
         // Else, pass this operation to the corresponding RemoteSender
         else {
@@ -327,12 +328,14 @@ public class CloudCore extends Thread {
         if (node.equals(name)) {
             String path = next.getParam().split(Operation.SEPARATOR)[1];
             // Semaphore needed!
-            if (createDirectory(path)) {
-                // Update GUIs
+            if (!createDirectory(path)) {
+                controller.notifyError("Error: The directory is already created or couldn't find \"" + path + "\".");   
             }
-            else {
-                // Error message?
-            }
+            // Updates GUI
+            String[] dirs = path.split("/");
+            StringBuilder current = new StringBuilder();
+            for (int i = 0; i < dirs.length - 1; i++) current.append(dirs[i] + "/");
+            opListdir(current.toString());
         }
         // Else, pass this operation to the corresponding RemoteSender
         else {
@@ -345,19 +348,24 @@ public class CloudCore extends Thread {
      * @param path the local path to display.
      */
     private void opListdir(String path) {
-        // Semaphore needed!
-        if (isCloudDir(path)) {
-            ArrayList<String> filesInfo = new ArrayList<>();
+        ArrayList<String> filesInfo = new ArrayList<>();
+        if (!isCloudDir(path)) {
+            controller.notifyError("Error: Couldn't find \"" + path + "\". The directory/file may not exist or was already deleted.");
 
-            for (File file : new File(getSystemRootDirectory() + "/" + path).listFiles()) {
-                filesInfo.add(file.getName() + Operation.SEPARATOR + file.lastModified() + Operation.SEPARATOR + file.isDirectory());
-            }
+            // Updates GUI in the current dir
+            String[] dirs = path.split("/");
+            StringBuilder current = new StringBuilder();
+            for (int i = 0; i < dirs.length - 1; i++) current.append(dirs[i] + "/");
+            path = current.toString();
 
-            listdir(name, filesInfo);
+            controller.updatePath(name, path);
         }
-        else {
-            // Couldn't find local dir
+
+        for (File file : new File(getSystemRootDirectory() + "/" + path).listFiles()) {
+            filesInfo.add(file.getName() + Operation.SEPARATOR + file.lastModified() + Operation.SEPARATOR + file.isDirectory());
         }
+
+        listdir(name, filesInfo);
     }
 
     /*  SYSTEM FUNCTIONS   */
@@ -528,6 +536,27 @@ public class CloudCore extends Thread {
         }
 
         return null;
+    }
+
+    /**
+     * Verifies the existence of the directory for the received files.
+     * If doesn't exists, then creates it.
+     */
+    public void checkReceivedDirectories() {
+        File dir = new File(getReceivedFilesDirectory());
+        if (!dir.exists()) dir.mkdir();
+        else if (dir.isFile()) {
+            dir.delete();
+            dir.mkdir();
+        }
+    }
+
+    /**
+     * Gets controller to notify the GUI some (non error) message.
+     * @param msg the message to be displayed.
+     */
+    public void putMessage(String msg) {
+        controller.notifyMessage(msg);
     }
 
 }

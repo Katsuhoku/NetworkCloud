@@ -104,8 +104,10 @@ public class RemoteReceiver extends Thread {
 
                         // If is going to receive file data
                         if (receiving.equals(Operation.SEND_DATA)) {
-                            //Receives a file and save it into the received files directory
-                            f = new File(core.getReceivedFilesDirectory() + '/' + din.readUTF());//Reads the file name
+                            // Receives a file and save it into the received files directory
+                            core.checkReceivedDirectories();
+                            String filename = din.readUTF(); // Reads the file name
+                            f = new File(core.getReceivedFilesDirectory() + '/' + filename);
                             bf = new BufferedOutputStream(new FileOutputStream(f));
                             //Reads file size
                             file_size = din.readLong(); 
@@ -118,6 +120,8 @@ public class RemoteReceiver extends Thread {
                             //Reads file last modified
                             f.setLastModified(din.readLong());
                             bf.close();
+
+                            core.putMessage("Received: \"" + filename + "\"");
                         }
                         // Else, the incoming data is a remote directory content
                         else {

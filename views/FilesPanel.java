@@ -58,12 +58,12 @@ public class FilesPanel extends JPanel {
         c.gridx = 0;
         c.gridy = 0;
         c.fill = GridBagConstraints.BOTH;
-        backButton.addActionListener(new ActionListener(){
+        backButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 controller.backButtonEvent();
             }
-            
+
         });
         add(backButton, c);
 
@@ -75,26 +75,28 @@ public class FilesPanel extends JPanel {
         pathField.setBorder(null);
         JScrollPane pathFieldScroll = new JScrollPane(pathField, ScrollPaneConstants.VERTICAL_SCROLLBAR_NEVER,
                 ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-        pathFieldScroll.getHorizontalScrollBar().setUI(new BasicScrollBarUI(){
+        pathFieldScroll.getHorizontalScrollBar().setUI(new BasicScrollBarUI() {
             @Override
             protected JButton createDecreaseButton(int orientation) {
                 return createZeroButton();
             }
+
             @Override
             protected JButton createIncreaseButton(int orientation) {
                 return createZeroButton();
             }
+
             @Override
-            protected void configureScrollBarColors(){
+            protected void configureScrollBarColors() {
                 this.thumbColor = new Color(69, 74, 83);
                 this.trackColor = new Color(39, 44, 53);
             }
 
-            private JButton createZeroButton(){
+            private JButton createZeroButton() {
                 JButton b = new JButton();
-                b.setMinimumSize(new Dimension(0,0));
-                b.setPreferredSize(new Dimension(0,0));
-                b.setMaximumSize(new Dimension(0,0));
+                b.setMinimumSize(new Dimension(0, 0));
+                b.setPreferredSize(new Dimension(0, 0));
+                b.setMaximumSize(new Dimension(0, 0));
                 return b;
             }
         });
@@ -114,10 +116,11 @@ public class FilesPanel extends JPanel {
         c.weighty = 1.0;
         c.weightx = 1.0;
         c.fill = GridBagConstraints.BOTH;
-        table = new JTable(new DefaultTableModel(new String[] {"Filename", "Last Modified", "isDirectory"}, 0){
+        table = new JTable(new DefaultTableModel(new String[] { "Filename", "Last Modified", "isDirectory" }, 0) {
             private static final long serialVersionUID = 1L;
+
             @Override
-            public boolean isCellEditable(int row, int column){
+            public boolean isCellEditable(int row, int column) {
                 return false;
             }
         });
@@ -126,45 +129,52 @@ public class FilesPanel extends JPanel {
         table.getTableHeader().setForeground(Color.WHITE);
         table.setBackground(new Color(39, 44, 53));
         table.setForeground(Color.WHITE);
-        table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION); //Solo una fila seleccionada
+        table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION); // Solo una fila seleccionada
         table.removeColumn(table.getColumnModel().getColumn(2));
-        table.getSelectionModel().addListSelectionListener(new ListSelectionListener(){
+        table.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
             @Override
             public void valueChanged(ListSelectionEvent e) {
-                if (!e.getValueIsAdjusting()){
-                    //True - Diretory
-                    //False - Any other file
+                if (!e.getValueIsAdjusting()) {
+                    // True - Diretory
+                    // False - Any other file
                     setOperationsButtons();
                 }
             }
         });
-         /*              ELIMINAR                
-         DefaultTableModel d = (DefaultTableModel) table.getModel();
-         d.addRow(new Object[] {"Archivo 1", new SimpleDateFormat("dd-MM-yyyy hh:mm:ss").format(new Date(System.currentTimeMillis())), true});
-         d.addRow(new Object[] {"Archivo 2", new SimpleDateFormat("dd-MM-yyyy hh:mm:ss").format(new Date(System.currentTimeMillis())), false});
-         d.addRow(new Object[] {"Archivo 3", new SimpleDateFormat("dd-MM-yyyy hh:mm:ss").format(new Date(System.currentTimeMillis())), true});
-        */
-        JScrollPane tableScroll = new JScrollPane(table, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
-        tableScroll.getVerticalScrollBar().setUI(new BasicScrollBarUI(){
+        /*
+         * ELIMINAR DefaultTableModel d = (DefaultTableModel) table.getModel();
+         * d.addRow(new Object[] {"Archivo 1", new
+         * SimpleDateFormat("dd-MM-yyyy hh:mm:ss").format(new
+         * Date(System.currentTimeMillis())), true}); d.addRow(new Object[]
+         * {"Archivo 2", new SimpleDateFormat("dd-MM-yyyy hh:mm:ss").format(new
+         * Date(System.currentTimeMillis())), false}); d.addRow(new Object[]
+         * {"Archivo 3", new SimpleDateFormat("dd-MM-yyyy hh:mm:ss").format(new
+         * Date(System.currentTimeMillis())), true});
+         */
+        JScrollPane tableScroll = new JScrollPane(table, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
+                ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+        tableScroll.getVerticalScrollBar().setUI(new BasicScrollBarUI() {
             @Override
             protected JButton createDecreaseButton(int orientation) {
                 return createZeroButton();
             }
+
             @Override
             protected JButton createIncreaseButton(int orientation) {
                 return createZeroButton();
             }
+
             @Override
-            protected void configureScrollBarColors(){
+            protected void configureScrollBarColors() {
                 this.thumbColor = new Color(69, 74, 83);
                 this.trackColor = new Color(39, 44, 53);
             }
 
-            private JButton createZeroButton(){
+            private JButton createZeroButton() {
                 JButton b = new JButton();
-                b.setMinimumSize(new Dimension(0,0));
-                b.setPreferredSize(new Dimension(0,0));
-                b.setMaximumSize(new Dimension(0,0));
+                b.setMinimumSize(new Dimension(0, 0));
+                b.setPreferredSize(new Dimension(0, 0));
+                b.setMaximumSize(new Dimension(0, 0));
                 return b;
             }
         });
@@ -279,6 +289,16 @@ public class FilesPanel extends JPanel {
         return (String)table.getModel().getValueAt(table.getSelectedRow(), 0);
     }
 
+    // To print an error
+    public void errorMessage(String msg) {
+        messages.setForeground(Color.RED);
+        messages.setText(msg);
+    }
 
+    // To print some other messages
+    public void putMessage(String msg) {
+        messages.setForeground(Color.CYAN);
+        messages.setText(msg);
+    }
 
 }

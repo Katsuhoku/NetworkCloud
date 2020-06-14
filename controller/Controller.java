@@ -32,7 +32,6 @@ public class Controller {
     public static void main(String[] args) throws IOException {
         Controller controller = new Controller();
         controller.initCore();
-        //controller.initWindow();
     }
 
     /* CONTROLLER ONLY */
@@ -190,9 +189,6 @@ public class Controller {
      * @param nodeNames the list of node names.
      */
     public void notifyReady(ArrayList<String> nodeNames) {
-        // Connect to GUI
-        // Before this method is called, the GUI must show only a charging screen,
-        // with all buttons and options disabled.
         initWindow(nodeNames);
     }
 
@@ -202,7 +198,15 @@ public class Controller {
      * @param msg the message to display.
      */
     public void notifyError(String msg) {
-        // Connect to GUI
+        mainWindow.getMainPanel().getFilesPanel(mainWindow.getMainPanel().getCurrentNode()).errorMessage(msg);
+    }
+
+    /**
+     * Notifies the GUI a normal message.
+     * @param msg the message to display
+     */
+    public void notifyMessage(String msg) {
+        mainWindow.getMainPanel().getFilesPanel(mainWindow.getMainPanel().getCurrentNode()).putMessage(msg);
     }
 
 
@@ -243,6 +247,8 @@ public class Controller {
             path = path + "/" + fp.getSelectedFilename();
         else
             path = "/" + path + "/" + fp.getSelectedFilename();
+
+        mainWindow.getMainPanel().getFilesPanel(mainWindow.getMainPanel().getCurrentNode()).errorMessage("");
         listdir(currentNode, "." + path);
         fp.updatePath(path);
         fp.setBackButtonEnable(true);
@@ -251,6 +257,7 @@ public class Controller {
     public void updateButtonEvent(){
         MainPanel mp = mainWindow.getMainPanel();
         String currentNode = mp.getCurrentNode();
+        mainWindow.getMainPanel().getFilesPanel(mainWindow.getMainPanel().getCurrentNode()).errorMessage("");
         listdir(currentNode, "./" + mp.getFilesPanel(currentNode).getPath());
     }
 
@@ -261,6 +268,8 @@ public class Controller {
 
         String path = fp.getPath();
         int last = path.lastIndexOf("/");
+
+        mainWindow.getMainPanel().getFilesPanel(mainWindow.getMainPanel().getCurrentNode()).errorMessage("");
 
         if (last == -1){
             //Regresa a la carpeta raiz
@@ -283,10 +292,12 @@ public class Controller {
             path = path + "/" + fp.getSelectedFilename();
         else
             path = "/" + path + "/" + fp.getSelectedFilename();
+        mainWindow.getMainPanel().getFilesPanel(mainWindow.getMainPanel().getCurrentNode()).errorMessage("");
         delete(currentNode, "." + path);
     }
 
     public void createDirectoryEvent(){
+        mainWindow.getMainPanel().getFilesPanel(mainWindow.getMainPanel().getCurrentNode()).errorMessage("");
         String dn = JOptionPane.showInputDialog(mainWindow, "Directory name:", "Create directory", JOptionPane.INFORMATION_MESSAGE);
         if (dn != null){
             MainPanel mp = mainWindow.getMainPanel();
@@ -302,6 +313,7 @@ public class Controller {
     }
 
     public void sendEvent(){
+        mainWindow.getMainPanel().getFilesPanel(mainWindow.getMainPanel().getCurrentNode()).errorMessage("");
         Object[] nodes = new String[] {"B", "C", "D"}; //CAMBIAR NODOS
         String node = (String)JOptionPane.showInputDialog(mainWindow, "To:", "SendFile", JOptionPane.INFORMATION_MESSAGE, null, nodes, nodes[0]);
         if (node != null){

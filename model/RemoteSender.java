@@ -141,6 +141,8 @@ public class RemoteSender extends Thread {
                                         dout.writeLong(f.lastModified());
                                         dout.flush();
                                         bf.close();
+
+                                        core.putMessage("Sended: \"" + f.getName() + "\"");
                                     }
                                     else {
                                         // The file doesn't exists, or is directory, but
