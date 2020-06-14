@@ -15,8 +15,8 @@ import controller.Controller;
 
 public class MainWindow extends JFrame {
     // Window properties
-    private final int MIN_WIDTH = 650;
-    private final int MIN_HEIGHT = 750;
+    private final int MIN_WIDTH = 850;
+    private final int MIN_HEIGHT = 550;
     
     private Controller controller;
 
@@ -26,6 +26,7 @@ public class MainWindow extends JFrame {
     private MainPanel mainPanel;
 
     public MainWindow(Controller controller) {
+        this.setBackground(new Color(32,37,44));
         this.controller = controller;
     }
 
