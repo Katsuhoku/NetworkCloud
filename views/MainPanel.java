@@ -2,8 +2,11 @@ package views;
 
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.Insets;
 import java.util.HashMap;
 import java.awt.CardLayout;
+import java.awt.Color;
+
 import javax.swing.JPanel;
 import controller.Controller;
 
@@ -12,32 +15,33 @@ public class MainPanel extends JPanel {
 
     private NodesPanel nodesPanel;
     private OperationsPanel operationsPanel;
-    
+
     private JPanel filesPanelsParent;
     private HashMap<String, FilesPanel> filesPanels;
     private CardLayout cards;
 
     private Controller controller;
-    
-    
-    public MainPanel(Controller controller){
-       super(new GridBagLayout());
-       this.controller = controller;
-       init();
+
+    public MainPanel(Controller controller) {
+        super(new GridBagLayout());
+        this.controller = controller;
+        setBackground(new Color(32, 37, 44));
+        init();
     }
-    
-    private void init(){
+
+    private void init() {
         GridBagConstraints c;
-        
+
         c = new GridBagConstraints();
-        //MODIFIRCAR NODE NAMES
-        nodesPanel = new NodesPanel(controller, new String[] {"Nodo 1", "Nodo 2","Nodo 3", "Nodo 4"});
+        // MODIFIRCAR NODE NAMES
+        nodesPanel = new NodesPanel(controller, new String[] { "1", "2", "3", "4" });
         c.gridx = 0;
-        c.gridy = 1;
+        c.gridy = 0;
         c.gridwidth = 1;
         c.gridheight = GridBagConstraints.REMAINDER;
         c.weighty = 1.0;
-        c.fill = GridBagConstraints.VERTICAL;
+        c.anchor = GridBagConstraints.NORTH;
+        //c.fill = GridBagConstraints.VERTICAL;
         add(nodesPanel, c);
         
         
@@ -59,7 +63,7 @@ public class MainPanel extends JPanel {
         filesPanels = new HashMap<>();
         filesPanelsParent = new JPanel(cards);
         //MODIFICAR NODE NAMES
-        for (String nodeName : new String[] {"Nodo 1", "Nodo 2","Nodo 3", "Nodo 4"}){
+        for (String nodeName : new String[] {"1", "2","3", "4"}){
             FilesPanel fp = new FilesPanel(controller, nodeName + "/");
             filesPanels.put(nodeName, fp);
             filesPanelsParent.add(fp, nodeName);
