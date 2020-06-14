@@ -15,6 +15,8 @@ import javax.swing.table.DefaultTableModel;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -50,11 +52,19 @@ public class FilesPanel extends JPanel {
 
         c = new GridBagConstraints();
         backButton = new JButton("<-");
+        backButton.setEnabled(false);
         backButton.setBackground(new Color(49, 54, 63));
         backButton.setForeground(Color.WHITE);
         c.gridx = 0;
         c.gridy = 0;
         c.fill = GridBagConstraints.BOTH;
+        backButton.addActionListener(new ActionListener(){
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                controller.backButtonEvent();
+            }
+            
+        });
         add(backButton, c);
 
         c = new GridBagConstraints();
@@ -128,13 +138,13 @@ public class FilesPanel extends JPanel {
                 }
             }
         });
-         //              ELIMINAR                
+         /*              ELIMINAR                
          DefaultTableModel d = (DefaultTableModel) table.getModel();
          d.addRow(new Object[] {"Archivo 1", new SimpleDateFormat("dd-MM-yyyy hh:mm:ss").format(new Date(System.currentTimeMillis())), true});
          d.addRow(new Object[] {"Archivo 2", new SimpleDateFormat("dd-MM-yyyy hh:mm:ss").format(new Date(System.currentTimeMillis())), false});
          d.addRow(new Object[] {"Archivo 3", new SimpleDateFormat("dd-MM-yyyy hh:mm:ss").format(new Date(System.currentTimeMillis())), true});
-        
-         JScrollPane tableScroll = new JScrollPane(table, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+        */
+        JScrollPane tableScroll = new JScrollPane(table, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
         tableScroll.getVerticalScrollBar().setUI(new BasicScrollBarUI(){
             @Override
             protected JButton createDecreaseButton(int orientation) {
@@ -230,10 +240,6 @@ public class FilesPanel extends JPanel {
     public void setBackButtonEnable(boolean b){
         backButton.setEnabled(b);
     }
-
-    public void updatePath(String path){
-        pathField.setText(path);
-    }
     
     public void updateTableData(ArrayList<String> files){
         DefaultTableModel d = (DefaultTableModel) table.getModel();
@@ -259,4 +265,20 @@ public class FilesPanel extends JPanel {
             controller.setSendButtonEnable(!b);
         }
     }
+
+    public String getPath(){
+        String[] p = pathField.getText().split("/", 2);
+        return (p.length > 1) ? p[1] : "";
+    }
+
+    public void updatePath(String path){
+        pathField.setText(nodeName + path);
+    }
+
+    public String getSelectedFilename(){
+        return (String)table.getModel().getValueAt(table.getSelectedRow(), 0);
+    }
+
+
+
 }

@@ -6,6 +6,7 @@ import java.util.ArrayList;
 
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
+import javax.swing.JOptionPane;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -14,6 +15,8 @@ import model.CloudCore;
 import model.FileHandler;
 import model.Operation;
 import model.Operation.Type;
+import views.FilesPanel;
+import views.MainPanel;
 import views.MainWindow;
 
 /**
@@ -85,6 +88,7 @@ public class Controller {
 
         mainWindow = new MainWindow(this);
         mainWindow.start(nodeNames);
+        listdir(nodeNames.get(0), ".");
     }
 
     /*  COMMUNICATION WINDOW -> CORE    */
@@ -127,6 +131,7 @@ public class Controller {
      * @param path
      */
     public void listdir(String node, String path) {
+        mainWindow.getMainPanel().getOperationsPanel().setLoaderVisible(true);
         // The dir is local
         if (node.equals(core.getNodeName())) {
             core.addOperation(new Operation(Type.LISTDIR, path));
@@ -156,6 +161,7 @@ public class Controller {
      * file to delete.
      */
     public void delete(String node, String path) {
+        mainWindow.getMainPanel().getOperationsPanel().setLoaderVisible(true);
         String param = node + Operation.SEPARATOR + path;
         core.addOperation(new Operation(Type.DELETE, param));
     }
@@ -175,6 +181,7 @@ public class Controller {
      */
     public void listFiles(String node, ArrayList<String> files) {
         mainWindow.getMainPanel().getFilesPanel(node).updateTableData(files);
+        mainWindow.getMainPanel().getOperationsPanel().setLoaderVisible(false);
     }
 
     /**
@@ -217,11 +224,99 @@ public class Controller {
     }
 
     public void showFilesPanel(String nodeName){
-        mainWindow.getMainPanel().showFilesPanel(nodeName);
-        mainWindow.getMainPanel().getFilesPanel(nodeName).setOperationsButtons();
+        MainPanel mp = mainWindow.getMainPanel();
+        mp.showFilesPanel(nodeName);
+        mp.getFilesPanel(nodeName).setOperationsButtons();
     }
 
     public void updatePath(String nodeName, String path){
         mainWindow.getMainPanel().getFilesPanel(nodeName).updatePath(path);
     }
+
+    public void openButtonEvent(){
+        MainPanel mp = mainWindow.getMainPanel();
+        String currentNode = mp.getCurrentNode();
+        FilesPanel fp = mp.getFilesPanel(currentNode);
+
+        String path = fp.getPath();
+        if (path.isEmpty())
+            path = path + "/" + fp.getSelectedFilename();
+        else
+            path = "/" + path + "/" + fp.getSelectedFilename();
+        listdir(currentNode, "." + path);
+        fp.updatePath(path);
+        fp.setBackButtonEnable(true);
+    }
+
+    public void updateButtonEvent(){
+        MainPanel mp = mainWindow.getMainPanel();
+        String currentNode = mp.getCurrentNode();
+        listdir(currentNode, "./" + mp.getFilesPanel(currentNode).getPath());
+    }
+
+    public void backButtonEvent(){
+        MainPanel mp = mainWindow.getMainPanel();
+        String currentNode = mp.getCurrentNode();
+        FilesPanel fp = mp.getFilesPanel(currentNode);
+
+        String path = fp.getPath();
+        int last = path.lastIndexOf("/");
+
+        if (last == -1){
+            //Regresa a la carpeta raiz
+            listdir(currentNode, ".");
+            fp.updatePath("");
+            fp.setBackButtonEnable(false);//Inhabilita el boton back
+        }else{
+            String newPath = path.substring(0, last);
+            listdir(currentNode, "./" + newPath);
+            fp.updatePath("/" + newPath);
+        }
+    }
+
+    public void deleteEvent(){
+        MainPanel mp = mainWindow.getMainPanel();
+        String currentNode = mp.getCurrentNode();
+        FilesPanel fp = mp.getFilesPanel(currentNode);
+        String path = fp.getPath();
+        if (path.isEmpty())
+            path = path + "/" + fp.getSelectedFilename();
+        else
+            path = "/" + path + "/" + fp.getSelectedFilename();
+        delete(currentNode, "." + path);
+    }
+
+    public void createDirectoryEvent(){
+        String dn = JOptionPane.showInputDialog(mainWindow, "Directory name:", "Create directory", JOptionPane.INFORMATION_MESSAGE);
+        if (dn != null){
+            MainPanel mp = mainWindow.getMainPanel();
+            String currentNode = mp.getCurrentNode();
+            FilesPanel fp = mp.getFilesPanel(currentNode);
+            String path = fp.getPath();
+            if (path.isEmpty())
+                path = path + "/" + dn;
+            else
+                path = "/" + path + "/" + dn;
+            mkdir(currentNode, path);
+        }
+    }
+
+    public void sendEvent(){
+        Object[] nodes = new String[] {"B", "C", "D"}; //CAMBIAR NODOS
+        String node = (String)JOptionPane.showInputDialog(mainWindow, "To:", "SendFile", JOptionPane.INFORMATION_MESSAGE, null, nodes, nodes[0]);
+        if (node != null){
+            MainPanel mp = mainWindow.getMainPanel();
+            String currentNode = mp.getCurrentNode();
+            FilesPanel fp = mp.getFilesPanel(currentNode);
+
+            String path = fp.getPath();
+            if (path.isEmpty())
+                path = path + "/" + fp.getSelectedFilename();
+            else
+                path = "/" + path + "/" + fp.getSelectedFilename();
+            send(currentNode, node, path);
+        }
+    }
+
+
 }
