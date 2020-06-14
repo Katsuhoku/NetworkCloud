@@ -6,6 +6,13 @@
     "configurations": [
         {
             "type": "java",
+            "name": "CodeLens (Launch) - Controller",
+            "request": "launch",
+            "mainClass": "controller.Controller",
+            "projectName": "NetworkCloud_b65f611d"
+        },
+        {
+            "type": "java",
             "name": "Debug (Launch) - Current File",
             "request": "launch",
             "mainClass": "${file}"

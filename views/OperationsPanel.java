@@ -40,7 +40,7 @@ public class OperationsPanel extends JPanel {
         openButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                controller.openButtonEvent();
+                controller.openEvent();
             }
             
         });
@@ -77,7 +77,7 @@ public class OperationsPanel extends JPanel {
         updateButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                controller.updateButtonEvent();
+                controller.updateEvent();
             }
             
         });
@@ -86,15 +86,12 @@ public class OperationsPanel extends JPanel {
         createDirButton.setBackground(new Color(49, 54, 63));
         createDirButton.setForeground(Color.WHITE);
         createDirButton.addActionListener(new ActionListener() {
-
             @Override
             public void actionPerformed(ActionEvent e) {
                 controller.createDirectoryEvent();
             }
             
         });
-
-        
 
         loader = new JLabel(new ImageIcon("images/ajax-loader.gif"), JLabel.CENTER);
         loader.setVisible(false);

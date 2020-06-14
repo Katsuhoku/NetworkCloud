@@ -35,11 +35,9 @@ public class FilesPanel extends JPanel {
     private JTextArea messages;
 
     private String nodeName;
-
     private Controller controller;
 
-    // COMO RECIBIRA LA INFORMACION?
-    // FALTAN EVENTOS
+
     public FilesPanel(Controller controller, String nodeName) {
         super(new GridBagLayout());
         this.controller = controller;
@@ -61,9 +59,8 @@ public class FilesPanel extends JPanel {
         backButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                controller.backButtonEvent();
+                controller.backEvent();
             }
-
         });
         add(backButton, c);
 
@@ -118,12 +115,12 @@ public class FilesPanel extends JPanel {
         c.fill = GridBagConstraints.BOTH;
         table = new JTable(new DefaultTableModel(new String[] { "Filename", "Last Modified", "isDirectory" }, 0) {
             private static final long serialVersionUID = 1L;
-
             @Override
             public boolean isCellEditable(int row, int column) {
                 return false;
             }
         });
+
         table.setFillsViewportHeight(true);
         table.getTableHeader().setBackground(new Color(69, 74, 83));
         table.getTableHeader().setForeground(Color.WHITE);
@@ -135,22 +132,10 @@ public class FilesPanel extends JPanel {
             @Override
             public void valueChanged(ListSelectionEvent e) {
                 if (!e.getValueIsAdjusting()) {
-                    // True - Diretory
-                    // False - Any other file
                     setOperationsButtons();
                 }
             }
         });
-        /*
-         * ELIMINAR DefaultTableModel d = (DefaultTableModel) table.getModel();
-         * d.addRow(new Object[] {"Archivo 1", new
-         * SimpleDateFormat("dd-MM-yyyy hh:mm:ss").format(new
-         * Date(System.currentTimeMillis())), true}); d.addRow(new Object[]
-         * {"Archivo 2", new SimpleDateFormat("dd-MM-yyyy hh:mm:ss").format(new
-         * Date(System.currentTimeMillis())), false}); d.addRow(new Object[]
-         * {"Archivo 3", new SimpleDateFormat("dd-MM-yyyy hh:mm:ss").format(new
-         * Date(System.currentTimeMillis())), true});
-         */
         JScrollPane tableScroll = new JScrollPane(table, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
                 ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
         tableScroll.getVerticalScrollBar().setUI(new BasicScrollBarUI() {
@@ -178,6 +163,7 @@ public class FilesPanel extends JPanel {
                 return b;
             }
         });
+
         tableScroll.setPreferredSize(new Dimension(0, 0));
         add(tableScroll, c);
 
@@ -253,11 +239,11 @@ public class FilesPanel extends JPanel {
     
     public void updateTableData(ArrayList<String> files){
         DefaultTableModel d = (DefaultTableModel) table.getModel();
-        d.setRowCount(0);
+        d.setRowCount(0); //Elimita todos las celdas antiguas
         for (String file : files){
             String[] data = file.split(Operation.SEPARATOR);
             DateFormat df = new SimpleDateFormat("dd-MM-yyyy hh:mm:ss");
-            d.addRow(new Object[] { data[0], df.format(new Date(Long.parseLong(data[1]))), Boolean.parseBoolean(data[2])});
+            d.addRow(new Object[] {data[0], df.format(new Date(Long.parseLong(data[1]))), Boolean.parseBoolean(data[2])});
         }
     }
 

@@ -16,6 +16,7 @@ import controller.Controller;
  */
 
 public class MainWindow extends JFrame {
+    private static final long serialVersionUID = 1L;
     // Window properties
     private final int MIN_WIDTH = 800;
     private final int MIN_HEIGHT = 450;
