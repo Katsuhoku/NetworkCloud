@@ -20,6 +20,7 @@ public class MainPanel extends JPanel {
     private JPanel filesPanelsParent;
     private HashMap<String, FilesPanel> filesPanels;
     private CardLayout cards;
+    private String currentNode;
 
     private Controller controller;
 
@@ -65,7 +66,7 @@ public class MainPanel extends JPanel {
         filesPanelsParent = new JPanel(cards);
         //MODIFICAR NODE NAMES
         for (String nodeName : nodeNames){
-            FilesPanel fp = new FilesPanel(controller, nodeName + "/");
+            FilesPanel fp = new FilesPanel(controller, nodeName);
             filesPanels.put(nodeName, fp);
             filesPanelsParent.add(fp, nodeName);
         }
@@ -77,7 +78,8 @@ public class MainPanel extends JPanel {
         c.gridheight = 1;
         c.weighty = 1.0;
         c.fill = GridBagConstraints.BOTH;
-        cards.show(filesPanelsParent, "Nodo 1");
+        currentNode = nodeNames.get(0);
+        cards.show(filesPanelsParent, currentNode);
         add(filesPanelsParent, c);
     }
 
@@ -95,7 +97,12 @@ public class MainPanel extends JPanel {
     }
 
     public void showFilesPanel(String nodeName){
+        currentNode = nodeName;
         cards.show(filesPanelsParent, nodeName);
+    }
+
+    public String getCurrentNode(){
+        return currentNode;
     }
     
 }

@@ -9,6 +9,7 @@ import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JLabel;
+
 import javax.swing.JPanel;
 import controller.Controller;
 
@@ -39,9 +40,7 @@ public class OperationsPanel extends JPanel {
         openButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                //Solo dsponible cuando un directorio este seleccionado
-                //Pedir directorio
-                //Actualizar directorio
+                controller.openButtonEvent();
             }
             
         });
@@ -54,8 +53,7 @@ public class OperationsPanel extends JPanel {
 
             @Override
             public void actionPerformed(ActionEvent e) {
-                // Solo disponible cuando un archivo este seleccionado
-                //??
+                controller.sendEvent();
             }
             
         });
@@ -68,8 +66,7 @@ public class OperationsPanel extends JPanel {
 
             @Override
             public void actionPerformed(ActionEvent e) {
-                //Elimina ya sea directorios o archivos, ya sean locales o remotos
-                //??
+                controller.deleteEvent();
             }
             
         });
@@ -80,8 +77,7 @@ public class OperationsPanel extends JPanel {
         updateButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                //Actualiza directorio actual
-                //??
+                controller.updateButtonEvent();
             }
             
         });
@@ -93,8 +89,7 @@ public class OperationsPanel extends JPanel {
 
             @Override
             public void actionPerformed(ActionEvent e) {
-                //Crea directorio ya sea local o remoto
-                //??
+                controller.createDirectoryEvent();
             }
             
         });
