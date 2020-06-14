@@ -117,7 +117,7 @@ public class RemoteSender extends Thread {
                                 core.requestSend();
 
                                 String requested = op.getParam().split(Operation.SEPARATOR)[2];
-                                f = new File(op.getParam().split(Operation.SEPARATOR)[1]);
+                                f = new File(core.getSystemRootDirectory() + op.getParam().split(Operation.SEPARATOR)[1]);
 
                                 // Sends what was requested
                                 dout.writeUTF(requested);
