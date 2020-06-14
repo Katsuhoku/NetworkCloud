@@ -29,7 +29,7 @@ public class Controller {
     public static void main(String[] args) throws IOException {
         Controller controller = new Controller();
         controller.initCore();
-        controller.initWindow();
+        //controller.initWindow();
     }
 
     /* CONTROLLER ONLY */
@@ -70,7 +70,7 @@ public class Controller {
     /**
      * Creates and initializes the window frame for the GUI.
      */
-    private void initWindow() {
+    private void initWindow(ArrayList<String> nodeNames) {
         try {
             UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
         } catch (ClassNotFoundException e) {
@@ -84,7 +84,7 @@ public class Controller {
         }
 
         mainWindow = new MainWindow(this);
-        mainWindow.start();
+        mainWindow.start(nodeNames);
     }
 
     /*  COMMUNICATION WINDOW -> CORE    */
@@ -186,6 +186,7 @@ public class Controller {
         // Connect to GUI
         // Before this method is called, the GUI must show only a charging screen,
         // with all buttons and options disabled.
+        initWindow(nodeNames);
     }
 
     /**
