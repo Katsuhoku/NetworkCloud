@@ -243,11 +243,12 @@ public class Controller {
         FilesPanel fp = mp.getFilesPanel(currentNode);
 
         String path = fp.getPath();
-        if (!path.isEmpty())
-            path = "/" + path ;
-        path = path.concat("/" + fp.getSelectedFilename());
-        
-        fp.errorMessage("");
+        if (path.isEmpty())
+            path = path + "/" + fp.getSelectedFilename();
+        else
+            path = "/" + path + "/" + fp.getSelectedFilename();
+
+        mainWindow.getMainPanel().getFilesPanel(mainWindow.getMainPanel().getCurrentNode()).errorMessage("");
         listdir(currentNode, "." + path);
         fp.updatePath(path);
         fp.setBackButtonEnable(true);
