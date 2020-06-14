@@ -10,7 +10,6 @@ import java.util.LinkedHashMap;
 import java.util.concurrent.Semaphore;
 
 import controller.Controller;
-import javafx.scene.Node;
 
 /**
  * The core <code>Thread</code> of the system. CloudCore manages the
