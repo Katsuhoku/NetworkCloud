@@ -128,12 +128,12 @@ public class FilesPanel extends JPanel {
                 }
             }
         });
-         /*              ELIMINAR                
+         //              ELIMINAR                
          DefaultTableModel d = (DefaultTableModel) table.getModel();
          d.addRow(new Object[] {"Archivo 1", new SimpleDateFormat("dd-MM-yyyy hh:mm:ss").format(new Date(System.currentTimeMillis())), true});
          d.addRow(new Object[] {"Archivo 2", new SimpleDateFormat("dd-MM-yyyy hh:mm:ss").format(new Date(System.currentTimeMillis())), false});
          d.addRow(new Object[] {"Archivo 3", new SimpleDateFormat("dd-MM-yyyy hh:mm:ss").format(new Date(System.currentTimeMillis())), true});
-        */
+        
          JScrollPane tableScroll = new JScrollPane(table, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
         tableScroll.getVerticalScrollBar().setUI(new BasicScrollBarUI(){
             @Override

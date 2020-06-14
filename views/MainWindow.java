@@ -2,6 +2,8 @@ package views;
 
 import java.awt.*;
 import java.awt.event.*;
+import java.util.ArrayList;
+
 import javax.swing.*;
 
 import controller.Controller;
@@ -30,7 +32,7 @@ public class MainWindow extends JFrame {
         this.controller = controller;
     }
 
-    public void start() {
+    public void start(ArrayList<String> nodeNames) {
         setTitle("Network Cloud");
         //setExtendedState(getExtendedState() | JFrame.MAXIMIZED_BOTH);
         setMinimumSize(new Dimension(MIN_WIDTH, MIN_HEIGHT));
@@ -42,14 +44,14 @@ public class MainWindow extends JFrame {
             }
         });
 
-        init();
+        init(nodeNames);
 
         setVisible(true);
     }
 
-    private void init() {
+    private void init(ArrayList<String> nodeNames) {
         // Main panel
-        mainPanel = new MainPanel(controller);
+        mainPanel = new MainPanel(controller, nodeNames);
         add(mainPanel);
     }
 

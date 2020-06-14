@@ -3,6 +3,7 @@ package views;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.awt.CardLayout;
 import java.awt.Color;
@@ -22,19 +23,19 @@ public class MainPanel extends JPanel {
 
     private Controller controller;
 
-    public MainPanel(Controller controller) {
+    public MainPanel(Controller controller, ArrayList<String> nodeNames) {
         super(new GridBagLayout());
         this.controller = controller;
         setBackground(new Color(32, 37, 44));
-        init();
+        init(nodeNames);
     }
 
-    private void init() {
+    private void init(ArrayList<String> nodeNames) {
         GridBagConstraints c;
 
         c = new GridBagConstraints();
         // MODIFIRCAR NODE NAMES
-        nodesPanel = new NodesPanel(controller, new String[] { "1", "2", "3", "4" });
+        nodesPanel = new NodesPanel(controller, nodeNames);
         c.gridx = 0;
         c.gridy = 0;
         c.gridwidth = 1;
@@ -63,7 +64,7 @@ public class MainPanel extends JPanel {
         filesPanels = new HashMap<>();
         filesPanelsParent = new JPanel(cards);
         //MODIFICAR NODE NAMES
-        for (String nodeName : new String[] {"1", "2","3", "4"}){
+        for (String nodeName : nodeNames){
             FilesPanel fp = new FilesPanel(controller, nodeName + "/");
             filesPanels.put(nodeName, fp);
             filesPanelsParent.add(fp, nodeName);
