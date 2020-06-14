@@ -153,6 +153,7 @@ public class CloudCore extends Thread {
 
         // Notify GUI system is ready to use.
         ArrayList<String> nodeNames = new ArrayList<>();
+        nodeNames.add(name);
         for (int i = 0; i < remoteNodes.length(); i++) nodeNames.add(remoteNodes.getJSONObject(i).getString("name"));
         controller.notifyReady(nodeNames);
 
