@@ -3,6 +3,7 @@ package views;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.awt.CardLayout;
 import java.awt.Color;
@@ -100,8 +101,8 @@ public class MainPanel extends JPanel {
         return currentNode;
     }
 
-    public String[] getAllNodeNames(){
-        return filesPanels.keySet().toArray(new String[filesPanels.size()]);
+    public ArrayList<String> getAllNodeNames(){
+        return new ArrayList<>(filesPanels.keySet());
     }
     
 }

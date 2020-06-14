@@ -18,6 +18,7 @@ import model.Operation.Type;
 import views.FilesPanel;
 import views.MainPanel;
 import views.MainWindow;
+import views.NodesPanel;
 
 /**
  * Network System controller, an interface to communicate GUI and the system
@@ -243,10 +244,9 @@ public class Controller {
         FilesPanel fp = mp.getFilesPanel(currentNode);
 
         String path = fp.getPath();
-        if (path.isEmpty())
-            path = path + "/" + fp.getSelectedFilename();
-        else
-            path = "/" + path + "/" + fp.getSelectedFilename();
+        if (!path.isEmpty())
+            path = "/" + path;
+        path = path + "/" + fp.getSelectedFilename();
 
         mainWindow.getMainPanel().getFilesPanel(mainWindow.getMainPanel().getCurrentNode()).errorMessage("");
         listdir(currentNode, "." + path);
@@ -288,46 +288,54 @@ public class Controller {
         String currentNode = mp.getCurrentNode();
         FilesPanel fp = mp.getFilesPanel(currentNode);
         String path = fp.getPath();
-        if (path.isEmpty())
-            path = path + "/" + fp.getSelectedFilename();
-        else
-            path = "/" + path + "/" + fp.getSelectedFilename();
+        if (!path.isEmpty())
+            path = "/" + path;
+        path = path + "/" + fp.getSelectedFilename();
         mainWindow.getMainPanel().getFilesPanel(mainWindow.getMainPanel().getCurrentNode()).errorMessage("");
         delete(currentNode, "." + path);
     }
 
     public void createDirectoryEvent(){
-        mainWindow.getMainPanel().getFilesPanel(mainWindow.getMainPanel().getCurrentNode()).errorMessage("");
+        MainPanel mp = mainWindow.getMainPanel();
+        String currentNode = mp.getCurrentNode();
+        FilesPanel fp = mp.getFilesPanel(currentNode);
+        
+        fp.putMessage("");
         String dn = JOptionPane.showInputDialog(mainWindow, "Directory name:", "Create directory", JOptionPane.INFORMATION_MESSAGE);
         if (dn != null){
-            MainPanel mp = mainWindow.getMainPanel();
-            String currentNode = mp.getCurrentNode();
-            FilesPanel fp = mp.getFilesPanel(currentNode);
             String path = fp.getPath();
-            if (path.isEmpty())
-                path = path + "/" + dn;
-            else
-                path = "/" + path + "/" + dn;
+            if (!path.isEmpty())
+                path = "/" + path;
+            path = path + "/" + dn;
             mkdir(currentNode, path);
+        }else{
+            fp.errorMessage("Operation Cancelled");
         }
     }
 
     public void sendEvent(){
-        mainWindow.getMainPanel().getFilesPanel(mainWindow.getMainPanel().getCurrentNode()).errorMessage("");
-        Object[] nodes = new String[] {"B", "C", "D"}; //CAMBIAR NODOS
-        String node = (String)JOptionPane.showInputDialog(mainWindow, "To:", "SendFile", JOptionPane.INFORMATION_MESSAGE, null, nodes, nodes[0]);
-        if (node != null){
-            MainPanel mp = mainWindow.getMainPanel();
-            String currentNode = mp.getCurrentNode();
-            FilesPanel fp = mp.getFilesPanel(currentNode);
+        MainPanel mp = mainWindow.getMainPanel();
+        String currentNode = mp.getCurrentNode();
+        FilesPanel fp = mp.getFilesPanel(currentNode);
+        ArrayList<String> nodeNames = mp.getAllNodeNames();
+        nodeNames.remove(currentNode);
 
-            String path = fp.getPath();
-            if (path.isEmpty())
+        fp.putMessage("");
+        if (!nodeNames.isEmpty()){
+            String node = (String)JOptionPane.showInputDialog(mainWindow, "To:", "SendFile", JOptionPane.INFORMATION_MESSAGE, null, nodeNames.toArray(), nodeNames.get(0));
+            if (node != null){
+                String path = fp.getPath();
+                if (!path.isEmpty())
+                    path = "/" + path;
                 path = path + "/" + fp.getSelectedFilename();
-            else
-                path = "/" + path + "/" + fp.getSelectedFilename();
-            send(currentNode, node, path);
+                send(currentNode, node, path);
+            }else{
+                fp.errorMessage("Operation Cancelled");
+            }
+        }else{
+            fp.errorMessage("There's no other node");
         }
+        
     }
 
 
