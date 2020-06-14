@@ -1,7 +1,7 @@
 {
     "name": "Mac",
     "path": "/Users/esielkar/Desktop/Sistema",
-    "localport": 49999,
+    "localport": 50000,
     "remote": [
         {
             "name": "PC",
