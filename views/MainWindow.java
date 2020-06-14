@@ -34,7 +34,7 @@ public class MainWindow extends JFrame {
     }
 
     public void start(ArrayList<String> nodeNames) {
-        setTitle("Network Cloud");
+        setTitle("Network Cloud: " + nodeNames.get(0));
         //setExtendedState(getExtendedState() | JFrame.MAXIMIZED_BOTH);
         setMinimumSize(new Dimension(MIN_WIDTH, MIN_HEIGHT));
         setLocationRelativeTo(null);

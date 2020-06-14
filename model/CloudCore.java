@@ -195,7 +195,7 @@ public class CloudCore extends Thread {
                 }
                 // If there's no more Operations, waits before checking again
                 else {
-                    sleep(500);
+                    sleep(50);
                 }
             } catch (InterruptedException e) {
                 e.printStackTrace();
