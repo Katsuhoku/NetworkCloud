@@ -2,7 +2,6 @@ package views;
 
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
-import java.awt.Insets;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.awt.CardLayout;
@@ -16,7 +15,6 @@ public class MainPanel extends JPanel {
 
     private NodesPanel nodesPanel;
     private OperationsPanel operationsPanel;
-
     private JPanel filesPanelsParent;
     private HashMap<String, FilesPanel> filesPanels;
     private CardLayout cards;
@@ -35,7 +33,6 @@ public class MainPanel extends JPanel {
         GridBagConstraints c;
 
         c = new GridBagConstraints();
-        // MODIFIRCAR NODE NAMES
         nodesPanel = new NodesPanel(controller, nodeNames);
         c.gridx = 0;
         c.gridy = 0;
@@ -60,11 +57,9 @@ public class MainPanel extends JPanel {
         
         
         //Se utilizan tarjetas y una tabla hash 
-        
         cards = new CardLayout();
         filesPanels = new HashMap<>();
         filesPanelsParent = new JPanel(cards);
-        //MODIFICAR NODE NAMES
         for (String nodeName : nodeNames){
             FilesPanel fp = new FilesPanel(controller, nodeName);
             filesPanels.put(nodeName, fp);
@@ -103,6 +98,10 @@ public class MainPanel extends JPanel {
 
     public String getCurrentNode(){
         return currentNode;
+    }
+
+    public String[] getAllNodeNames(){
+        return filesPanels.keySet().toArray(new String[filesPanels.size()]);
     }
     
 }

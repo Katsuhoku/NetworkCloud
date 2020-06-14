@@ -35,7 +35,6 @@ public class NodesPanel extends JPanel {
                 @Override
                 public void actionPerformed(ActionEvent e) {
                     //Cambio de nodo (Panel)
-                    //Llamar al controlador
                     controller.showFilesPanel(((JButton)e.getSource()).getText());
                 }
             });

@@ -237,31 +237,30 @@ public class Controller {
         mainWindow.getMainPanel().getFilesPanel(nodeName).updatePath(path);
     }
 
-    public void openButtonEvent(){
+    public void openEvent(){
         MainPanel mp = mainWindow.getMainPanel();
         String currentNode = mp.getCurrentNode();
         FilesPanel fp = mp.getFilesPanel(currentNode);
 
         String path = fp.getPath();
-        if (path.isEmpty())
-            path = path + "/" + fp.getSelectedFilename();
-        else
-            path = "/" + path + "/" + fp.getSelectedFilename();
-
-        mainWindow.getMainPanel().getFilesPanel(mainWindow.getMainPanel().getCurrentNode()).errorMessage("");
+        if (!path.isEmpty())
+            path = "/" + path ;
+        path = path.concat("/" + fp.getSelectedFilename());
+        
+        fp.errorMessage("");
         listdir(currentNode, "." + path);
         fp.updatePath(path);
         fp.setBackButtonEnable(true);
     }
 
-    public void updateButtonEvent(){
+    public void updateEvent(){
         MainPanel mp = mainWindow.getMainPanel();
         String currentNode = mp.getCurrentNode();
         mainWindow.getMainPanel().getFilesPanel(mainWindow.getMainPanel().getCurrentNode()).errorMessage("");
         listdir(currentNode, "./" + mp.getFilesPanel(currentNode).getPath());
     }
 
-    public void backButtonEvent(){
+    public void backEvent(){
         MainPanel mp = mainWindow.getMainPanel();
         String currentNode = mp.getCurrentNode();
         FilesPanel fp = mp.getFilesPanel(currentNode);
