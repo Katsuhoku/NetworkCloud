@@ -558,4 +558,15 @@ public class CloudCore extends Thread {
         controller.notifyMessage(msg);
     }
 
+    /**
+     * Disconnects for reconnection the {@link model.RemoteSender
+     * RemoteSender} thread when the {@link model.RemoteReceiver
+     * RemoteReceiver} threads detects a remote node desconnection.
+     * @param remoteNodeName the name of the node has disconnected.
+     * @throws IOException
+     */
+    public void reconnect(String remoteNodeName) throws IOException {
+        remoteSenderThreads.get(remoteNodeName).reconnect();
+    }
+
 }

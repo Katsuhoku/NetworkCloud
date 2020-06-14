@@ -103,7 +103,7 @@ public class RemoteSender extends Thread {
                 sender = new Socket(remoteAddress, remotePort);
                 sender.shutdownInput();// This socket will be specifically used to send data
                 dout = new DataOutputStream(new BufferedOutputStream(sender.getOutputStream()));
-                while (true) {
+                while (!sender.isClosed()) {
                     if ((op = getNextOperation()) != null) {
                         //Sends the operation type name
                         dout.writeUTF(op.getType().name());
@@ -161,13 +161,14 @@ public class RemoteSender extends Thread {
 
                                         // Sends one by one
                                         dout.writeInt(filesInfo.size());
+                                        dout.flush();
                                         for (int i = 0; i < filesInfo.size(); i++) {
                                             dout.writeUTF(filesInfo.get(i));
+                                            dout.flush();
                                         }
                                     }
                                     else {
-                                        // The directory doesn't exist, but
-                                        // what to do?
+                                        System.out.println("Error?");
                                     }
                                 }
 
@@ -190,7 +191,7 @@ public class RemoteSender extends Thread {
                 try{
                     if (sender != null && sender.isConnected())
                         sender.close();
-                    Thread.sleep(5000);
+                    Thread.sleep(500);
                 }catch (InterruptedException | IOException e1) {
                     //Error?
                 }
@@ -247,5 +248,15 @@ public class RemoteSender extends Thread {
             ioe.printStackTrace();
         }
         return null;
+    }
+
+    /**
+     * Closes this thread's socket to try reconnection. This method
+     * will be called when de {@link model.RemoteReceiver RemoteReceiver}
+     * thread detects that the remote node has gone disconnected.
+     * @throws IOException
+     */
+    public void reconnect() throws IOException {
+        sender.close();
     }
 }

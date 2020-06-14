@@ -1,22 +1,12 @@
 {
-    "name": "Mac",
-    "path": "/Users/esielkar/Desktop/Sistema",
-    "localport": 50000,
+    "name": "Katsushika",
+    "path": "D:/networkcloud_test",
+    "localport": 42069,
     "remote": [
         {
-            "name": "PC",
-            "address": "10.0.0.20",
-            "port": 50000
-        },
-        {
-            "name": "C",
-            "address": "0.0.0.0",
-            "port": 0
-        },
-        {
-            "name": "D",
-            "address": "0.0.0.0",
-            "port": 0
+            "name": "Hokusai",
+            "address": "192.168.100.155",
+            "port": 42070
         }
     ],
     "backup": {

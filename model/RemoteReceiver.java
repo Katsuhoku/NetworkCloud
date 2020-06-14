@@ -149,6 +149,8 @@ public class RemoteReceiver extends Thread {
         } catch (IOException e) {
             if (receiver.isConnected())
                 try {
+                    // Disconnects the sender
+                    core.reconnect(remoteNodeName);
                     receiver.close();
                 } catch (IOException e1) {
                     
