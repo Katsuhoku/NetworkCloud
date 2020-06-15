@@ -83,11 +83,6 @@ public class Queue {
         return next;
     }
 
-    // Appends the specified Operation at the end of de queue (file)
-    // -InterruptedException, if the thread accessing this method gets interrupted.
-    // (This exception has to be managed in the corresponding thread)
-    // -IOException, if there's a problem with the Queue file. This could happen
-    // because the Queue file was deleted or manipulated.
     /**
      * Appends the specified {@link model.Operation Operation} at the end of the 
      * queue file. If the file doesn't exist yet, then it's first created, and 

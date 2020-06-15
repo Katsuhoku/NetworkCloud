@@ -4,9 +4,9 @@
     "localport": 42069,
     "remote": [
         {
-            "name": "Hokusai",
-            "address": "192.168.100.155",
-            "port": 42070
+            "name": "Sakurajima",
+            "address": "192.168.100.11",
+            "port": 42069
         }
     ],
     "backup": {

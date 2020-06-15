@@ -417,7 +417,26 @@ public class CloudCore extends Thread {
      * deleted; <code>false</code> otherwise.
      */
     private boolean delete(String path) {
-        return new File(getSystemRootDirectory() + "/" + path).delete();
+        File todelete = new File(getSystemRootDirectory() + "/" + path);
+        if (todelete.isDirectory()) return emptydir(todelete);
+        return todelete.delete();
+    }
+
+    /**
+     * <b>Recursive</b>
+     * As Java can only delete empty directories, this function deletes recursively all
+     * the content of the directory passed as argument.
+     * @param dir the directory as <code>File</code> to empty.
+     */
+    private boolean emptydir(File dir) {
+        for (File f : dir.listFiles()) {
+            if (f.isDirectory()){
+                emptydir(f);
+                f.delete();
+            }
+            else f.delete();
+        }
+        return dir.delete();
     }
 
     /**
