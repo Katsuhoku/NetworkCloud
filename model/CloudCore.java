@@ -547,10 +547,11 @@ public class CloudCore extends Thread {
      * functionality, but returns <code>null</code> if the IP wasn't in the remote node's
      * list.
      */
-    public String getRemoteNodeName(String address) {
+    public String getRemoteNodeName(String address, int port) {
         for (int i = 0; i < remoteNodes.length(); i ++) {
-            String aux = remoteNodes.getJSONObject(i).getString("address");
-            if (address.equals(aux)) return remoteNodes.getJSONObject(i).getString("name");
+            String auxAddress = remoteNodes.getJSONObject(i).getString("address");
+            int auxPort = remoteNodes.getJSONObject(i).getInt("port");
+            if (address.equals(auxAddress) && port == auxPort) return remoteNodes.getJSONObject(i).getString("name");
         }
 
         return null;

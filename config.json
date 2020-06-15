@@ -1,12 +1,17 @@
 {
-    "name": "Katsushika",
-    "path": "D:/networkcloud_test",
+    "name": "A",
+    "path": "C:/Users/Katsushika/Documents/networkcloud_tests/A",
     "localport": 42069,
     "remote": [
         {
-            "name": "Hokusai",
+            "name": "B",
             "address": "192.168.100.155",
             "port": 42070
+        },
+        {
+            "name": "C",
+            "address": "192.168.100.155",
+            "port": 42071
         }
     ],
     "backup": {

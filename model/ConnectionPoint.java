@@ -44,7 +44,7 @@ public class ConnectionPoint extends Thread {
                 socket.shutdownOutput();
 
                 // Send socket to RemoteReceiver
-                core.addRemoteReceiver(new RemoteReceiver(core, socket, core.getRemoteNodeName(socket.getInetAddress().getHostAddress())));
+                core.addRemoteReceiver(new RemoteReceiver(core, socket, core.getRemoteNodeName(socket.getInetAddress().getHostAddress(), socket.getPort())));
             }
         } catch (IOException e) {
             System.out.println("Error?");
