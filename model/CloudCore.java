@@ -172,8 +172,6 @@ public class CloudCore extends Thread {
 
                 // If there was an Operation
                 if (next != null) {
-                    System.out.println(next);
-
                     // Obtain the node involved
                     String node = next.getParam().split(Operation.SEPARATOR)[0];
 
