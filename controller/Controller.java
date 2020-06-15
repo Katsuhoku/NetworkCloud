@@ -18,7 +18,6 @@ import model.Operation.Type;
 import views.FilesPanel;
 import views.MainPanel;
 import views.MainWindow;
-import views.NodesPanel;
 
 /**
  * Network System controller, an interface to communicate GUI and the system
@@ -92,6 +91,13 @@ public class Controller {
     }
 
     /*  COMMUNICATION WINDOW -> CORE    */
+
+    /**
+     * @return this node's name.
+     */
+    public String getLocalName() {
+        return core.getNodeName();
+    }
 
     /**
      * Depending on what node is the sender, constructs and passes to the
@@ -200,6 +206,26 @@ public class Controller {
      */
     public void notifyError(String msg) {
         mainWindow.getMainPanel().getFilesPanel(mainWindow.getMainPanel().getCurrentNode()).errorMessage(msg);
+    }
+
+    /**
+     * Notifies the GUI the status of a single node. This method is called whenever
+     * a node gets connected or disconnected.
+     * @param nodeName the name of the node wich got connected/disconnected.
+     * @param value <code>true</code> for connection, and <code>false</code> for disconnection.
+     */
+    public void notifyNodeStatus(String nodeName, boolean value) {
+        mainWindow.getMainPanel().getNodesPanel().setConnected(nodeName, value);
+    }
+
+    /**
+     * Check if the GUI is ready to use.
+     * @return <code>false</code> if the mainWindow and some of their principal parts are <code>null</code>,
+     * <code>true</code> otherwise.
+     */
+    public boolean checkGUI() {
+        if (mainWindow == null || mainWindow.getMainPanel() == null || mainWindow.getMainPanel().getNodesPanel() == null) return false;
+        return true;
     }
 
     /**

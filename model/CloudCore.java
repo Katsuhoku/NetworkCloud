@@ -112,6 +112,11 @@ public class CloudCore extends Thread {
      */
     private Semaphore recv;
 
+    /**
+     * GUI Update mutex.
+     */
+    private Semaphore guiupdt;
+
     public CloudCore(Controller controller, JSONObject config) {
         this.controller = controller;
         this.config = config;
@@ -129,6 +134,8 @@ public class CloudCore extends Thread {
         send = new Semaphore(1, true);
 
         recv = new Semaphore(1, true);
+
+        guiupdt = new Semaphore(1, true);
     }
 
     @Override
@@ -570,6 +577,21 @@ public class CloudCore extends Thread {
      */
     public void reconnect(String remoteNodeName) throws IOException {
         remoteSenderThreads.get(remoteNodeName).reconnect();
+    }
+
+    /**
+     * Notifies the controller for a node connection or disconnection.
+     * 
+     * @param nodeName the node name wich status changed.
+     * @param value    <code>true</code> for connection, <code>false</code> for
+     *                 disconnection.
+     * @throws InterruptedException
+     */
+    public void nodeStatus(String nodeName, boolean value) throws InterruptedException {
+        guiupdt.acquire();
+            while(!controller.checkGUI()) sleep(100);
+            controller.notifyNodeStatus(nodeName, value);
+        guiupdt.release();
     }
 
 }

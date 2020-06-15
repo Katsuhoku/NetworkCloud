@@ -9,12 +9,13 @@ import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import controller.Controller;
 
 public class NodesPanel extends JPanel {
     private static final long serialVersionUID = 1L;
-    private JButton[] nodes;
+    private HashMap<String, JButton> nodeButtons;
     private Controller controller;
 
     public NodesPanel(Controller controller, ArrayList<String> nodeNames) {
@@ -24,21 +25,29 @@ public class NodesPanel extends JPanel {
     }
 
     private void init(ArrayList<String> nodeNames) {
-        nodes = new JButton[nodeNames.size()];
+        nodeButtons = new HashMap<>();
 
-        for (int i = 0; i < nodes.length; i++) {
-            nodes[i] = new JButton(nodeNames.get(i));
-            nodes[i].setPreferredSize(new Dimension(100,25));
-            nodes[i].setBackground(new Color(49, 54, 63));
-            nodes[i].setForeground(Color.WHITE);
-            nodes[i].addActionListener(new ActionListener() {
+        for (String nodeName : nodeNames) {
+            JButton nodeButton = new JButton(nodeName);
+            nodeButton.setPreferredSize(new Dimension(100, 25));
+            nodeButton.setBackground(new Color(49, 54, 63));
+            if (nodeName.equals(controller.getLocalName())) nodeButton.setForeground(Color.WHITE);
+            else nodeButton.setForeground(Color.ORANGE);
+            nodeButton.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
-                    //Cambio de nodo (Panel)
+                    // Cambio de nodo (Panel)
                     controller.showFilesPanel(((JButton)e.getSource()).getText());
                 }
             });
-            add(nodes[i]);
+
+            nodeButtons.put(nodeName, nodeButton);
+            add(nodeButton);
         }
+    }
+
+    public void setConnected(String nodeName, boolean value) {
+        if (value) nodeButtons.get(nodeName).setForeground(Color.GREEN);
+        else nodeButtons.get(nodeName).setForeground(Color.ORANGE);
     }
 }

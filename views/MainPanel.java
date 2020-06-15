@@ -3,7 +3,6 @@ package views;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.awt.CardLayout;
 import java.awt.Color;

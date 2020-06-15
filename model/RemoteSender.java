@@ -105,6 +105,8 @@ public class RemoteSender extends Thread {
                 dout = new DataOutputStream(new BufferedOutputStream(sender.getOutputStream()));
                 dout.writeUTF(core.getNodeName());
                 dout.flush();
+
+                core.nodeStatus(remoteNodeName, true);
                 while (!sender.isClosed()) {
                     if ((op = getNextOperation()) != null) {
                         //Sends the operation type name
