@@ -58,10 +58,9 @@ public class RemoteReceiver extends Thread {
      * @param receiver the socket created by the {@link model.ConnectionPoint
      *                 ConnectionPoint}.
      */
-    public RemoteReceiver(CloudCore core, Socket receiver, String remoteNodeName) {
+    public RemoteReceiver(CloudCore core, Socket receiver) {
         this.core = core;
         this.receiver = receiver;
-        this.remoteNodeName = remoteNodeName;
     }
 
     public void setMutex(Semaphore mutex) {
@@ -80,6 +79,8 @@ public class RemoteReceiver extends Thread {
 
         try {
             din = new DataInputStream(new BufferedInputStream(receiver.getInputStream()));
+            // Gets the remote node name (from actually the remote node name)
+            remoteNodeName = din.readUTF();
             while (true) {
                 switch(Operation.Type.valueOf(din.readUTF())){ //Reads operation
                     case LISTDIR:

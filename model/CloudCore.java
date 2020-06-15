@@ -541,23 +541,6 @@ public class CloudCore extends Thread {
     }
 
     /**
-     * Returns the name of the node with the IP address specified in the parameter.
-     * @param address the IP address to search
-     * @return the name of the node with that IP. Logically, it has to exist due system
-     * functionality, but returns <code>null</code> if the IP wasn't in the remote node's
-     * list.
-     */
-    public String getRemoteNodeName(String address, int port) {
-        for (int i = 0; i < remoteNodes.length(); i ++) {
-            String auxAddress = remoteNodes.getJSONObject(i).getString("address");
-            int auxPort = remoteNodes.getJSONObject(i).getInt("port");
-            if (address.equals(auxAddress) && port == auxPort) return remoteNodes.getJSONObject(i).getString("name");
-        }
-
-        return null;
-    }
-
-    /**
      * Verifies the existence of the directory for the received files.
      * If doesn't exists, then creates it.
      */

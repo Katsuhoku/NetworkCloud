@@ -103,6 +103,8 @@ public class RemoteSender extends Thread {
                 sender = new Socket(remoteAddress, remotePort);
                 sender.shutdownInput();// This socket will be specifically used to send data
                 dout = new DataOutputStream(new BufferedOutputStream(sender.getOutputStream()));
+                dout.writeUTF(core.getNodeName());
+                dout.flush();
                 while (!sender.isClosed()) {
                     if ((op = getNextOperation()) != null) {
                         //Sends the operation type name
